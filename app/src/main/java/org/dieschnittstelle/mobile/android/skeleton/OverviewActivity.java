@@ -45,11 +45,11 @@ public class OverviewActivity extends AppCompatActivity {
                         String item = result.getData().getStringExtra("item");
                         onItemEdited(item);
                     } else if (result.getResultCode() == Activity.RESULT_CANCELED) {
-                        showMessage("edit/create cancelled!");
+                        showMessage("action cancelled!");
                     }
 
                     else {
-                        showMessage("got result code for created/edited: " + result.getResultCode());
+                        showMessage("got result code for action: " + result.getResultCode());
                     }
                 }
             }
