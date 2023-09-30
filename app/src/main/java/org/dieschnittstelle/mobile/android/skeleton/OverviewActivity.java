@@ -5,6 +5,7 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -21,6 +22,10 @@ import android.widget.TextView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.dieschnittstelle.mobile.android.skeleton.model.IToDoCRUDOperations;
+import org.dieschnittstelle.mobile.android.skeleton.model.SimpleToDoCRUDOperations;
+import org.dieschnittstelle.mobile.android.skeleton.model.ToDo;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,10 +33,12 @@ import java.util.List;
 public class OverviewActivity extends AppCompatActivity {
 
     private ListView listView;
-    private List<String> listData = new ArrayList<>(Arrays.asList("Test", "Item", "noch ein", "Paar"));
-    private ArrayAdapter<String> listViewAdapter;
+    private List<ToDo> listData = new ArrayList<>();
+    private ArrayAdapter<ToDo> listViewAdapter;
 
     private FloatingActionButton fab;
+
+    private IToDoCRUDOperations crudOperations;
 
     private ActivityResultLauncher<Intent> callDetailViewLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -39,10 +46,10 @@ public class OverviewActivity extends AppCompatActivity {
                 @Override
                 public void onActivityResult(ActivityResult result) {
                     if (result.getResultCode() == DetailviewActivity.ITEM_CREATED) {
-                        String item = result.getData().getStringExtra("item");
+                        ToDo item = (ToDo)result.getData().getSerializableExtra(DetailviewActivity.ARG_ITEM);
                         onNewItemCreated(item);
                     } else if (result.getResultCode() == DetailviewActivity.ITEM_EDITED){
-                        String item = result.getData().getStringExtra("item");
+                        ToDo item = (ToDo)result.getData().getSerializableExtra(DetailviewActivity.ARG_ITEM);
                         onItemEdited(item);
                     } else if (result.getResultCode() == Activity.RESULT_CANCELED) {
                         showMessage("action cancelled!");
@@ -60,34 +67,45 @@ public class OverviewActivity extends AppCompatActivity {
 
         // 1) Auswahl der darzustellenden Ansicht
         setContentView(R.layout.activity_overview);
+
+        this.crudOperations = new SimpleToDoCRUDOperations();
+
         this.listView = findViewById(R.id.listView);
         this.fab = findViewById(R.id.fab);
 
         this.fab.setOnClickListener(view -> {
             onCreateNewItem();
         });
-//                listData.forEach(listitem -> {
-//                    TextView itemView = (TextView) getLayoutInflater().inflate(R.layout.activity_overview_listitem, null);
-//                    itemView.setText(listitem);
-//                    itemView.setOnClickListener(view -> {
-//                        onListitemSelected(String.valueOf(((TextView)view).getText()));
-//                    });
-//                    this.listView.addView(itemView);
-//                });
-        this.listViewAdapter = new ArrayAdapter<>(this, R.layout.activity_overview_listitem, listData);
+
+        // prepare the list view
+        this.listViewAdapter = new ArrayAdapter<>(this, R.layout.activity_overview_listitem, listData) {
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            //    return super.getView(position, convertView, parent);
+                TextView itemView = (TextView)getLayoutInflater().inflate(R.layout.activity_overview_listitem,null);
+                ToDo item = this.getItem(position);
+                itemView.setText(item.getName());
+                return itemView;
+            }
+        };
+
         this.listView.setAdapter(this.listViewAdapter);
         this.listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int positionOfSelectedItem, long l) {
-                String selectedItem = listViewAdapter.getItem(positionOfSelectedItem);
+                ToDo selectedItem = listViewAdapter.getItem(positionOfSelectedItem);
                 onListitemSelected(selectedItem);
             }
         });
+
+        // initialize the list
+        listViewAdapter.addAll(crudOperations.readAllToDos());
     }
 
-    public void onListitemSelected(String listitem) {
+    public void onListitemSelected(ToDo listitem) {
         Intent callDetailViewIntent = new Intent(this, DetailviewActivity.class);
-        callDetailViewIntent.putExtra("item",listitem);
+        callDetailViewIntent.putExtra(DetailviewActivity.ARG_ITEM,listitem);
         callDetailViewLauncher.launch(callDetailViewIntent);
     }
 
@@ -95,12 +113,12 @@ public class OverviewActivity extends AppCompatActivity {
         callDetailViewLauncher.launch(new Intent(this,DetailviewActivity.class));
     }
 
-    public void onNewItemCreated(String item) {
+    public void onNewItemCreated(ToDo item) {
         this.listViewAdapter.add(item);
     }
 
-    public void onItemEdited(String item) {
-        showMessage(("edited: " + item));
+    public void onItemEdited(ToDo item) {
+        showMessage(("edited: " + item.getName()));
     }
 
     public void showMessage(String msg) {

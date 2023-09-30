@@ -10,8 +10,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.dieschnittstelle.mobile.android.skeleton.model.ToDo;
+
 public class DetailviewActivity extends AppCompatActivity {
 
+    public static final String ARG_ITEM = "item";
     public static final int ITEM_CREATED = 1;
     public static final int ITEM_EDITED = 2;
 
@@ -34,11 +37,12 @@ public class DetailviewActivity extends AppCompatActivity {
         itemDescriptionView = findViewById(R.id.itemDescription);
         fab = findViewById(R.id.fab);
 
-        // C) bind data to the view elementd
-        String item = getIntent().getStringExtra("item");
+        // C) bind data to the view element
+        ToDo item = (ToDo)getIntent().getSerializableExtra(ARG_ITEM);
         // C.1) distinguish between the two cases for using this activity: create and edit
         if (item != null) {
-            itemNameView.setText(item);
+            itemNameView.setText(item.getName());
+            itemDescriptionView.setText(item.getDescription());
         } else {
             this.createMode = true;
         }
@@ -51,9 +55,12 @@ public class DetailviewActivity extends AppCompatActivity {
     }
 
     protected void onItemSaved() {
-        String item = itemNameView.getText().toString();
+        String itemName = itemNameView.getText().toString();
+        String itemDescription = itemDescriptionView.getText().toString();
+        ToDo returnItem = new ToDo(itemName);
+        returnItem.setDescription(itemDescription);
         Intent returnIntent = new Intent();
-        returnIntent.putExtra("item",item);
+        returnIntent.putExtra(ARG_ITEM,returnItem);
         setResult(createMode ? ITEM_CREATED : ITEM_EDITED,returnIntent);
         finish();
     }

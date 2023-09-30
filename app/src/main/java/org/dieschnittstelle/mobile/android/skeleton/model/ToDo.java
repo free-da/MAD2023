@@ -1,8 +1,9 @@
 package org.dieschnittstelle.mobile.android.skeleton.model;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class ToDo {
+public class ToDo implements Serializable {
 
     private long id;
     private String name;
@@ -61,4 +62,6 @@ public class ToDo {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+
 }
