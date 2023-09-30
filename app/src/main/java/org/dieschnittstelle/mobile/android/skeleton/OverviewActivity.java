@@ -78,8 +78,9 @@ public class OverviewActivity extends AppCompatActivity {
         this.listView.setAdapter(this.listViewAdapter);
         this.listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
+            public void onItemClick(AdapterView<?> adapterView, View view, int positionOfSelectedItem, long l) {
+                String selectedItem = listViewAdapter.getItem(positionOfSelectedItem);
+                onListitemSelected(selectedItem);
             }
         });
     }
@@ -95,7 +96,7 @@ public class OverviewActivity extends AppCompatActivity {
     }
 
     public void onNewItemCreated(String item) {
-        showMessage(("created: " + item));
+        this.listViewAdapter.add(item);
     }
 
     public void onItemEdited(String item) {
