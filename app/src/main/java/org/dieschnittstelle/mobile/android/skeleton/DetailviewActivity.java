@@ -24,8 +24,6 @@ public class DetailviewActivity extends AppCompatActivity {
     private FloatingActionButton fab;
 
     private ToDo item;
-    private boolean createMode;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +58,7 @@ public class DetailviewActivity extends AppCompatActivity {
         this.item.setDescription(itemDescription);
         Intent returnIntent = new Intent();
         returnIntent.putExtra(ARG_ITEM,this.item);
-        setResult(createMode ? ITEM_CREATED : ITEM_EDITED,returnIntent);
+        setResult(this.item.getId() == 0L ? ITEM_CREATED : ITEM_EDITED,returnIntent);
         finish();
     }
 }

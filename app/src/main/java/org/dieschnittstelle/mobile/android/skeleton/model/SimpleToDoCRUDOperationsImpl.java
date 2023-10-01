@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SimpleToDoCRUDOperations implements IToDoCRUDOperations{
+public class SimpleToDoCRUDOperationsImpl implements IToDoCRUDOperations{
 
     private static long idcounter = 0;
 
     private List<ToDo> items = new ArrayList<>();
 
-    public SimpleToDoCRUDOperations() {
+    public SimpleToDoCRUDOperationsImpl() {
         Arrays.asList("lirem","dopsum","olor","sed","adipiscing")
                 .forEach(name -> createToDo(new ToDo(name)));
     }
@@ -24,6 +24,11 @@ public class SimpleToDoCRUDOperations implements IToDoCRUDOperations{
 
     @Override
     public List<ToDo> readAllToDos() {
+        try {
+            Thread.sleep(5000);
+        } catch (Exception e) {
+
+        }
         return items;
     }
 

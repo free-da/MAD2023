@@ -17,13 +17,15 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.dieschnittstelle.mobile.android.skeleton.model.IToDoCRUDOperations;
-import org.dieschnittstelle.mobile.android.skeleton.model.SimpleToDoCRUDOperations;
+import org.dieschnittstelle.mobile.android.skeleton.model.RoomToDoCRUDOperationsImpl;
+import org.dieschnittstelle.mobile.android.skeleton.model.SimpleToDoCRUDOperationsImpl;
 import org.dieschnittstelle.mobile.android.skeleton.model.ToDo;
 
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ public class OverviewActivity extends AppCompatActivity {
 
     private FloatingActionButton fab;
 
+    private ProgressBar progressBar;
     private IToDoCRUDOperations crudOperations;
 
     private ActivityResultLauncher<Intent> callDetailViewLauncher = registerForActivityResult(
@@ -67,10 +70,11 @@ public class OverviewActivity extends AppCompatActivity {
         // 1) Auswahl der darzustellenden Ansicht
         setContentView(R.layout.activity_overview);
 
-        this.crudOperations = new SimpleToDoCRUDOperations();
+        this.crudOperations = new RoomToDoCRUDOperationsImpl(this.getApplicationContext());
 
         this.listView = findViewById(R.id.listView);
         this.fab = findViewById(R.id.fab);
+        this.progressBar = findViewById(R.id.progressBar);
 
         this.fab.setOnClickListener(view -> {
             onCreateNewItem();
@@ -100,7 +104,18 @@ public class OverviewActivity extends AppCompatActivity {
         });
 
         // initialize the list
-        listViewAdapter.addAll(crudOperations.readAllToDos());
+        // 1. prepare the view for the data access that will take place
+        progressBar.setVisibility(View.VISIBLE);
+        new Thread(() -> {
+            // 2. run the data access on a separate thread
+            List<ToDo> items = crudOperations.readAllToDos();
+            Log.i(OverviewActivity.class.getSimpleName(),"got items: " + items);
+            // 3. get back to the ui thread in order to update the ui
+            listViewAdapter.addAll(crudOperations.readAllToDos());
+            runOnUiThread(() -> {
+                progressBar.setVisibility(View.GONE);
+            });
+        }).start();
     }
 
     public void onListitemSelected(ToDo listitem) {
@@ -114,13 +129,19 @@ public class OverviewActivity extends AppCompatActivity {
     }
 
     public void onNewItemReceived(ToDo item) {
-        // run the CRUD operation
-        item = this.crudOperations.createToDo(item);
-        // update the view
-        this.listViewAdapter.add(item);
+        // 1. run the CRUD operation on a separate thread
+        new Thread(() -> {
+            ToDo createdItem = this.crudOperations.createToDo(item);
+        // 2. update the view
+            this.runOnUiThread(() -> {
+                this.listViewAdapter.add(createdItem);
+            });
+        }).start();
+
     }
 
     public void onEditedItemReceived(ToDo item) {
+        this.crudOperations.updateToDo(item);
         Log.i(OverviewActivity.class.getSimpleName(),"item id: " + item.getId() + ", " + item.getName());
         int positionOfItemInList = listViewAdapter.getPosition(item);
         ToDo itemInList = listViewAdapter.getItem(positionOfItemInList);
