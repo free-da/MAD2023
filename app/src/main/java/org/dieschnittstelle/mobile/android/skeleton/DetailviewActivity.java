@@ -23,6 +23,7 @@ public class DetailviewActivity extends AppCompatActivity {
 
     private FloatingActionButton fab;
 
+    private ToDo item;
     private boolean createMode;
 
     @Override
@@ -38,16 +39,14 @@ public class DetailviewActivity extends AppCompatActivity {
         fab = findViewById(R.id.fab);
 
         // C) bind data to the view element
-        ToDo item = (ToDo)getIntent().getSerializableExtra(ARG_ITEM);
+        this.item = (ToDo)getIntent().getSerializableExtra(ARG_ITEM);
         // C.1) distinguish between the two cases for using this activity: create and edit
         if (item != null) {
             itemNameView.setText(item.getName());
             itemDescriptionView.setText(item.getDescription());
         } else {
-            this.createMode = true;
+            this.item = new ToDo();
         }
-
-
         // D) prepare the view for user interaction
         fab.setOnClickListener(view -> {
             onItemSaved();
@@ -57,10 +56,10 @@ public class DetailviewActivity extends AppCompatActivity {
     protected void onItemSaved() {
         String itemName = itemNameView.getText().toString();
         String itemDescription = itemDescriptionView.getText().toString();
-        ToDo returnItem = new ToDo(itemName);
-        returnItem.setDescription(itemDescription);
+        this.item.setName(itemName);
+        this.item.setDescription(itemDescription);
         Intent returnIntent = new Intent();
-        returnIntent.putExtra(ARG_ITEM,returnItem);
+        returnIntent.putExtra(ARG_ITEM,this.item);
         setResult(createMode ? ITEM_CREATED : ITEM_EDITED,returnIntent);
         finish();
     }

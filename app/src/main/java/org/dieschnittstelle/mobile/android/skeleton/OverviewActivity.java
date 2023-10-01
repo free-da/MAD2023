@@ -3,7 +3,6 @@ package org.dieschnittstelle.mobile.android.skeleton;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -27,7 +27,6 @@ import org.dieschnittstelle.mobile.android.skeleton.model.SimpleToDoCRUDOperatio
 import org.dieschnittstelle.mobile.android.skeleton.model.ToDo;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class OverviewActivity extends AppCompatActivity {
@@ -47,10 +46,10 @@ public class OverviewActivity extends AppCompatActivity {
                 public void onActivityResult(ActivityResult result) {
                     if (result.getResultCode() == DetailviewActivity.ITEM_CREATED) {
                         ToDo item = (ToDo)result.getData().getSerializableExtra(DetailviewActivity.ARG_ITEM);
-                        onNewItemCreated(item);
+                        onNewItemReceived(item);
                     } else if (result.getResultCode() == DetailviewActivity.ITEM_EDITED){
                         ToDo item = (ToDo)result.getData().getSerializableExtra(DetailviewActivity.ARG_ITEM);
-                        onItemEdited(item);
+                        onEditedItemReceived(item);
                     } else if (result.getResultCode() == Activity.RESULT_CANCELED) {
                         showMessage("action cancelled!");
                     }
@@ -78,14 +77,15 @@ public class OverviewActivity extends AppCompatActivity {
         });
 
         // prepare the list view
-        this.listViewAdapter = new ArrayAdapter<>(this, R.layout.activity_overview_listitem, listData) {
+        this.listViewAdapter = new ArrayAdapter<>(this, R.layout.activity_overview_listitem_simple, listData) {
             @NonNull
             @Override
             public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             //    return super.getView(position, convertView, parent);
-                TextView itemView = (TextView)getLayoutInflater().inflate(R.layout.activity_overview_listitem,null);
+                ViewGroup itemView = (ViewGroup) getLayoutInflater().inflate(R.layout.activity_overview_listitem,null);
+                TextView itemNameView = itemView.findViewById(R.id.itemName);
                 ToDo item = this.getItem(position);
-                itemView.setText(item.getName());
+                itemNameView.setText(item.getName());
                 return itemView;
             }
         };
@@ -113,12 +113,22 @@ public class OverviewActivity extends AppCompatActivity {
         callDetailViewLauncher.launch(new Intent(this,DetailviewActivity.class));
     }
 
-    public void onNewItemCreated(ToDo item) {
+    public void onNewItemReceived(ToDo item) {
+        // run the CRUD operation
+        item = this.crudOperations.createToDo(item);
+        // update the view
         this.listViewAdapter.add(item);
     }
 
-    public void onItemEdited(ToDo item) {
-        showMessage(("edited: " + item.getName()));
+    public void onEditedItemReceived(ToDo item) {
+        Log.i(OverviewActivity.class.getSimpleName(),"item id: " + item.getId() + ", " + item.getName());
+        int positionOfItemInList = listViewAdapter.getPosition(item);
+        ToDo itemInList = listViewAdapter.getItem(positionOfItemInList);
+        itemInList.setName(item.getName());
+        itemInList.setDescription(item.getDescription());
+        itemInList.setDone(item.isDone());
+        //showMessage(("edited: " + item.getName()));
+        listViewAdapter.notifyDataSetChanged();
     }
 
     public void showMessage(String msg) {
