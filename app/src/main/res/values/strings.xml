@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">MAD Demo WS2324</string>
+    <string name="welcome_message">Welcome to MAD WS2324</string>
+    <string name="welcome_message_alternative">Welcome again to MAD WS2324</string>
+    <string name="welcome_message_reply_toast">Welcome again, MAD user</string>
+    <string name="overview_listitem_selected">Selected: %s</string>
+</resources>
