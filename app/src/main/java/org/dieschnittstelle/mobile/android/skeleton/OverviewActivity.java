@@ -24,6 +24,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.dieschnittstelle.mobile.android.skeleton.model.IToDoCRUDOperations;
+import org.dieschnittstelle.mobile.android.skeleton.model.RetrofitToDoCRUDOperationsImpl;
 import org.dieschnittstelle.mobile.android.skeleton.model.RoomToDoCRUDOperationsImpl;
 import org.dieschnittstelle.mobile.android.skeleton.model.SimpleToDoCRUDOperationsImpl;
 import org.dieschnittstelle.mobile.android.skeleton.model.ToDo;
@@ -66,11 +67,9 @@ public class OverviewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // 1) Auswahl der darzustellenden Ansicht
         setContentView(R.layout.activity_overview);
 
-        this.crudOperations = new RoomToDoCRUDOperationsImpl(this.getApplicationContext());
+        this.crudOperations = ((ToDoApplication)getApplication()).getCRUDOperations();
 
         this.listView = findViewById(R.id.listView);
         this.fab = findViewById(R.id.fab);
@@ -141,15 +140,19 @@ public class OverviewActivity extends AppCompatActivity {
     }
 
     public void onEditedItemReceived(ToDo item) {
-        this.crudOperations.updateToDo(item);
-        Log.i(OverviewActivity.class.getSimpleName(),"item id: " + item.getId() + ", " + item.getName());
-        int positionOfItemInList = listViewAdapter.getPosition(item);
-        ToDo itemInList = listViewAdapter.getItem(positionOfItemInList);
-        itemInList.setName(item.getName());
-        itemInList.setDescription(item.getDescription());
-        itemInList.setDone(item.isDone());
-        //showMessage(("edited: " + item.getName()));
-        listViewAdapter.notifyDataSetChanged();
+        new Thread(() -> {
+            this.crudOperations.updateToDo(item);
+            runOnUiThread(() -> {
+                Log.i(OverviewActivity.class.getSimpleName(),"item id: " + item.getId() + ", " + item.getName());
+                int positionOfItemInList = listViewAdapter.getPosition(item);
+                ToDo itemInList = listViewAdapter.getItem(positionOfItemInList);
+                itemInList.setName(item.getName());
+                itemInList.setDescription(item.getDescription());
+                itemInList.setDone(item.isDone());
+                //showMessage(("edited: " + item.getName()));
+                listViewAdapter.notifyDataSetChanged();
+            });
+        }).start();
     }
 
     public void showMessage(String msg) {

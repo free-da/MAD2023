@@ -11,7 +11,7 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
-public class RetrofitDataItemCRUDOperationsImpl implements IToDoCRUDOperations {
+public class RetrofitToDoCRUDOperationsImpl implements IToDoCRUDOperations {
 
     public static interface ToDoResource {
 
@@ -31,9 +31,9 @@ public class RetrofitDataItemCRUDOperationsImpl implements IToDoCRUDOperations {
 
     private ToDoResource toDoResource;
 
-    public RetrofitDataItemCRUDOperationsImpl() {
+    public RetrofitToDoCRUDOperationsImpl() {
         Retrofit webapiBase = new Retrofit.Builder()
-                .baseUrl("192.168.2.209:8080")
+                .baseUrl("http://192.168.2.225:8080")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
