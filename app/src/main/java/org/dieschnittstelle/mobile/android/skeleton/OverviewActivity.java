@@ -111,7 +111,7 @@ public class OverviewActivity extends AppCompatActivity {
             Log.i(OverviewActivity.class.getSimpleName(),"got items: " + items);
             // 3. get back to the ui thread in order to update the ui
             runOnUiThread(() -> {
-                listViewAdapter.addAll(crudOperations.readAllToDos());
+                listViewAdapter.addAll(items);
                 progressBar.setVisibility(View.GONE);
             });
         }).start();
