@@ -26,8 +26,25 @@
                 <requestFocus/>
             </com.google.android.material.textfield.TextInputEditText>
         </com.google.android.material.textfield.TextInputLayout>
+        <LinearLayout
+            android:id="@+id/itemCheckedWrapper"
+            app:layout_constraintTop_toBottomOf="@+id/itemNameWrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <CheckBox
+                android:checked="@={controller.item.done}"
+                android:id="@+id/itemChecked"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:labelFor="@id/itemChecked"
+                android:text="Checked?"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"/>
+        </LinearLayout>
         <com.google.android.material.textfield.TextInputLayout
-            app:layout_constraintTop_toBottomOf="@id/itemNameWrapper"
+            app:layout_constraintTop_toBottomOf="@id/itemCheckedWrapper"
             android:hint="Description"
             android:id="@+id/itemDescriptionWrapper"
             android:layout_width="match_parent"
