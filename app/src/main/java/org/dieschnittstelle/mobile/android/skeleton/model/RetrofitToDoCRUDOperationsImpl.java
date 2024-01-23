@@ -52,6 +52,11 @@ public class RetrofitToDoCRUDOperationsImpl implements IToDoCRUDOperations {
     @Override
     public List<ToDo> readAllToDos() {
         try {
+            Thread.sleep(2500);
+        } catch (Exception e) {
+
+        }
+        try {
             return this.toDoResource.readAll().execute().body();
         } catch (Exception e) {
             throw new RuntimeException(e);
