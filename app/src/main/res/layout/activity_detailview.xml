@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <variable
-            name="controller"
-            type="org.dieschnittstelle.mobile.android.skeleton.DetailviewActivity" />
+            name="viewmodel"
+            type="org.dieschnittstelle.mobile.android.skeleton.viewmodel.IDetailviewViewmodel" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -18,7 +18,7 @@
             android:layout_height="wrap_content">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/itemName"
-                android:text="@={controller.item.name}"
+                android:text="@={viewmodel.item.name}"
                 android:singleLine="true"
                 android:imeOptions="actionNext"
                 android:layout_width="match_parent"
@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <CheckBox
-                android:checked="@={controller.item.done}"
+                android:checked="@={viewmodel.item.done}"
                 android:id="@+id/itemChecked"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
@@ -52,7 +52,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 app:layout_constraintTop_toBottomOf="@id/itemNameWrapper"
                 android:id="@+id/itemDescription"
-                android:text="@={controller.item.description}"
+                android:text="@={viewmodel.item.description}"
                 android:lines="10"
                 android:minLines="5"
                 android:gravity="start"
@@ -62,7 +62,7 @@
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
-            android:onClick="@{() -> controller.onItemSaved()}"
+            android:onClick="@{() -> viewmodel.onItemSaved()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:srcCompat="@drawable/baseline_save_white_24dp"
