@@ -10,10 +10,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -102,7 +104,7 @@ public class OverviewActivity extends AppCompatActivity {
             }
         });
 
-        // initialize the list
+       /* // initialize the list
         // 1. prepare the view for the data access that will take place
         progressBar.setVisibility(View.VISIBLE);
         new Thread(() -> {
@@ -114,7 +116,25 @@ public class OverviewActivity extends AppCompatActivity {
                 listViewAdapter.addAll(items);
                 progressBar.setVisibility(View.GONE);
             });
-        }).start();
+        }).start();*/
+
+        new AsyncTask<Void,Void,List<ToDo>>() {
+            @Override
+            protected void onPreExecute() {
+                progressBar.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            protected List<ToDo> doInBackground(Void... voids) {
+                return crudOperations.readAllToDos();
+            }
+
+            @Override
+            protected void onPostExecute(List<ToDo> items) {
+                listViewAdapter.addAll(items);
+                progressBar.setVisibility(ViewStub.GONE);
+            }
+        }.execute();
     }
 
     public void onListitemSelected(ToDo listitem) {
