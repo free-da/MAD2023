@@ -5,6 +5,7 @@
         <variable
             name="viewmodel"
             type="org.dieschnittstelle.mobile.android.skeleton.viewmodel.IDetailviewViewmodel" />
+
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.app.Activity;
@@ -26,6 +27,7 @@ import android.widget.TextView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.dieschnittstelle.mobile.android.skeleton.databinding.ActivityOverviewListitemBinding;
 import org.dieschnittstelle.mobile.android.skeleton.model.IToDoCRUDOperations;
 import org.dieschnittstelle.mobile.android.skeleton.model.RetrofitToDoCRUDOperationsImpl;
 import org.dieschnittstelle.mobile.android.skeleton.model.RoomToDoCRUDOperationsImpl;
@@ -88,12 +90,11 @@ public class OverviewActivity extends AppCompatActivity {
             @NonNull
             @Override
             public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            //    return super.getView(position, convertView, parent);
-                ViewGroup itemView = (ViewGroup) getLayoutInflater().inflate(R.layout.activity_overview_listitem,null);
-                TextView itemNameView = itemView.findViewById(R.id.itemName);
+                ActivityOverviewListitemBinding itemBinding = DataBindingUtil.inflate(getLayoutInflater(),R.layout.activity_overview_listitem,null,false);
                 ToDo item = this.getItem(position);
-                itemNameView.setText(item.getName());
-                return itemView;
+                itemBinding.setItem(item);
+                itemBinding.setController(OverviewActivity.this);
+                return itemBinding.getRoot();
             }
         };
 
@@ -133,6 +134,11 @@ public class OverviewActivity extends AppCompatActivity {
         } else {
             listViewAdapter.addAll(overviewViewmodel.getItems());
         }
+    }
+
+    public void checkedChangedForListitem(ToDo item) {
+        showMessage("Checked changed for: " + item.getName());
+
     }
 
     public void onListitemSelected(ToDo listitem) {
