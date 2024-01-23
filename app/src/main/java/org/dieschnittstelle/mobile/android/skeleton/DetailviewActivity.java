@@ -7,9 +7,11 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.dieschnittstelle.mobile.android.skeleton.databinding.ActivityDetailviewBinding;
 import org.dieschnittstelle.mobile.android.skeleton.model.ToDo;
 
 public class DetailviewActivity extends AppCompatActivity {
@@ -24,12 +26,14 @@ public class DetailviewActivity extends AppCompatActivity {
     private FloatingActionButton fab;
 
     private ToDo item;
+
+    private ActivityDetailviewBinding binding;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
         // A) determine the view
-        setContentView(R.layout.activity_detailview);
+        this.binding = DataBindingUtil.setContentView(this,R.layout.activity_detailview);
 
         // B) prepare initialising the view by reading out its elements
         itemNameView = findViewById(R.id.itemName);
@@ -40,11 +44,13 @@ public class DetailviewActivity extends AppCompatActivity {
         this.item = (ToDo)getIntent().getSerializableExtra(ARG_ITEM);
         // C.1) distinguish between the two cases for using this activity: create and edit
         if (item != null) {
-            itemNameView.setText(item.getName());
-            itemDescriptionView.setText(item.getDescription());
+//            itemNameView.setText(item.getName());
+//            itemDescriptionView.setText(item.getDescription());
         } else {
             this.item = new ToDo();
         }
+
+        this.binding.setController(this);
         // D) prepare the view for user interaction
         fab.setOnClickListener(view -> {
             onItemSaved();
@@ -60,5 +66,9 @@ public class DetailviewActivity extends AppCompatActivity {
         returnIntent.putExtra(ARG_ITEM,this.item);
         setResult(this.item.getId() == 0L ? ITEM_CREATED : ITEM_EDITED,returnIntent);
         finish();
+    }
+
+    public ToDo getItem() {
+        return item;
     }
 }
