@@ -47,16 +47,24 @@ public class DetailviewActivity extends AppCompatActivity {
         } else {
             Log.i(DetailviewActivity.class.getSimpleName(),"use item from viewmodel: " + this.viewmodel.getItem());
         }
-
+        this.viewmodel.getSavedOccurred().observe(this, occurred -> {
+            onItemSaved();
+        });
 
         // C) pass the data to the view (it will care itself how to deal with them)
         this.binding.setViewmodel(this.viewmodel);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i(DetailviewActivity.class.getSimpleName(),"onPause invoked");
+    }
+
     public void onItemSaved() {
-//        Intent returnIntent = new Intent();
-//        returnIntent.putExtra(ARG_ITEM,this.item);
-//        setResult(this.item.getId() == 0L ? ITEM_CREATED : ITEM_EDITED,returnIntent);
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(ARG_ITEM,this.viewmodel.getItem());
+        setResult(this.viewmodel.getItem().getId() == 0L ? ITEM_CREATED : ITEM_EDITED,returnIntent);
         finish();
     }
 
