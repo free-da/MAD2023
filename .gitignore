@@ -1,5 +1,7 @@
 .gradle/*
 .idea/workspace.xml
+
+*.lock
 # ignore ALL .log files
 *.log
 .extract/logs/
