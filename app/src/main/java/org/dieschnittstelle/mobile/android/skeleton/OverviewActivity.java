@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -30,6 +31,7 @@ import org.dieschnittstelle.mobile.android.skeleton.model.RetrofitToDoCRUDOperat
 import org.dieschnittstelle.mobile.android.skeleton.model.RoomToDoCRUDOperationsImpl;
 import org.dieschnittstelle.mobile.android.skeleton.model.SimpleToDoCRUDOperationsImpl;
 import org.dieschnittstelle.mobile.android.skeleton.model.ToDo;
+import org.dieschnittstelle.mobile.android.skeleton.viewmodel.OverviewViewmodelImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,23 +106,33 @@ public class OverviewActivity extends AppCompatActivity {
             }
         });
 
-        new MADAsyncTask<Void,Void,List<ToDo>>() {
-            @Override
-            protected void onPreExecute() {
-                progressBar.setVisibility(View.VISIBLE);
-            }
+        // obtain a view model, which may either be empty or contain items we have loaded before
+        OverviewViewmodelImpl overviewViewmodel = new ViewModelProvider(this).get(OverviewViewmodelImpl.class);
 
-            @Override
-            protected List<ToDo> doInBackground(Void... voids) {
-                return crudOperations.readAllToDos();
-            }
+        // check whether we have read the data items before or not
+        if (overviewViewmodel.getItems() == null) {
+            new MADAsyncTask<Void,Void,List<ToDo>>() {
+                @Override
+                protected void onPreExecute() {
+                    progressBar.setVisibility(View.VISIBLE);
+                }
 
-            @Override
-            protected void onPostExecute(List<ToDo> items) {
-                listViewAdapter.addAll(items);
-                progressBar.setVisibility(ViewStub.GONE);
-            }
-        }.execute();
+                @Override
+                protected List<ToDo> doInBackground(Void... voids) {
+                    return crudOperations.readAllToDos();
+                }
+
+                @Override
+                protected void onPostExecute(List<ToDo> items) {
+                    listViewAdapter.addAll(items);
+                    overviewViewmodel.setItems(items);
+                    progressBar.setVisibility(ViewStub.GONE);
+                }
+            }.execute();
+
+        } else {
+            listViewAdapter.addAll(overviewViewmodel.getItems());
+        }
     }
 
     public void onListitemSelected(ToDo listitem) {
