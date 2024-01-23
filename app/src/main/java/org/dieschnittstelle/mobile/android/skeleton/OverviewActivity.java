@@ -104,21 +104,7 @@ public class OverviewActivity extends AppCompatActivity {
             }
         });
 
-       /* // initialize the list
-        // 1. prepare the view for the data access that will take place
-        progressBar.setVisibility(View.VISIBLE);
-        new Thread(() -> {
-            // 2. run the data access on a separate thread
-            List<ToDo> items = crudOperations.readAllToDos();
-            Log.i(OverviewActivity.class.getSimpleName(),"got items: " + items);
-            // 3. get back to the ui thread in order to update the ui
-            runOnUiThread(() -> {
-                listViewAdapter.addAll(items);
-                progressBar.setVisibility(View.GONE);
-            });
-        }).start();*/
-
-        new AsyncTask<Void,Void,List<ToDo>>() {
+        new MADAsyncTask<Void,Void,List<ToDo>>() {
             @Override
             protected void onPreExecute() {
                 progressBar.setVisibility(View.VISIBLE);
