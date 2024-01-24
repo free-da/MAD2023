@@ -15,6 +15,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -36,9 +38,12 @@ import org.dieschnittstelle.mobile.android.skeleton.model.ToDo;
 import org.dieschnittstelle.mobile.android.skeleton.viewmodel.OverviewViewmodelImpl;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class OverviewActivity extends AppCompatActivity {
+
+    private static final Comparator<ToDo> SORT_BY_CHECKED_AND_NAME = Comparator.comparing(ToDo::isDone).thenComparing(ToDo::getName);
 
     private ListView listView;
     private List<ToDo> listData = new ArrayList<>();
@@ -46,6 +51,7 @@ public class OverviewActivity extends AppCompatActivity {
 
     private FloatingActionButton fab;
 
+    private Comparator<ToDo> currentSortMode = SORT_BY_CHECKED_AND_NAME;
     private ProgressBar progressBar;
     private IToDoCRUDOperations crudOperations;
 
@@ -86,7 +92,7 @@ public class OverviewActivity extends AppCompatActivity {
         });
 
         // prepare the list view
-        this.listViewAdapter = new ArrayAdapter<>(this, R.layout.activity_overview_listitem_simple, listData) {
+        this.listViewAdapter = new ArrayAdapter<>(this, R.layout.activity_overview_listitem, listData) {
             @NonNull
             @Override
             public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -127,17 +133,35 @@ public class OverviewActivity extends AppCompatActivity {
                 protected void onPostExecute(List<ToDo> items) {
                     listViewAdapter.addAll(items);
                     overviewViewmodel.setItems(items);
+                    sortItems();
                     progressBar.setVisibility(ViewStub.GONE);
                 }
             }.execute();
 
         } else {
             listViewAdapter.addAll(overviewViewmodel.getItems());
+            sortItems();
         }
     }
 
     public void checkedChangedForListitem(ToDo item) {
-        showMessage("Checked changed for: " + item.getName());
+        new MADAsyncTask<Void,Void,List<ToDo>>() {
+            @Override
+            protected void onPreExecute() {
+                crudOperations.updateToDo(item);
+            }
+
+            @Override
+            protected List<ToDo> doInBackground(Void... voids) {
+               return crudOperations.readAllToDos();
+            }
+
+            @Override
+            protected void onPostExecute(List<ToDo> items) {
+                sortItems();
+                showMessage("Checked changed for: " + item.getName());
+            }
+        }.execute();
 
     }
 
@@ -158,6 +182,7 @@ public class OverviewActivity extends AppCompatActivity {
         // 2. update the view
             this.runOnUiThread(() -> {
                 this.listViewAdapter.add(createdItem);
+                sortItems();
             });
         }).start();
 
@@ -167,19 +192,39 @@ public class OverviewActivity extends AppCompatActivity {
         new Thread(() -> {
             this.crudOperations.updateToDo(item);
             runOnUiThread(() -> {
-                Log.i(OverviewActivity.class.getSimpleName(),"item id: " + item.getId() + ", " + item.getName());
                 int positionOfItemInList = listViewAdapter.getPosition(item);
                 ToDo itemInList = listViewAdapter.getItem(positionOfItemInList);
                 itemInList.setName(item.getName());
                 itemInList.setDescription(item.getDescription());
                 itemInList.setDone(item.isDone());
-                //showMessage(("edited: " + item.getName()));
-                listViewAdapter.notifyDataSetChanged();
+                sortItems();
             });
         }).start();
     }
 
     public void showMessage(String msg) {
         Snackbar.make(findViewById(R.id.rootView),msg, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_overview_menu,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.sortItems) {
+            this.sortItems();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void sortItems() {
+        showMessage("Sorting...");
+        this.listData.sort(currentSortMode);
+        this.listViewAdapter.notifyDataSetChanged();
     }
 }

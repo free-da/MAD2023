@@ -66,5 +66,7 @@ public class ToDo implements Serializable {
         return Objects.hash(id);
     }
 
-
+    public String toString() {
+        return "{Todo " + this.id + ", name: " + this.name + ", description: " + this.description + ", checked: " + this.done + "}";
+    }
 }

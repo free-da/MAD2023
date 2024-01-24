@@ -5,6 +5,7 @@ import android.widget.Toast;
 
 import org.dieschnittstelle.mobile.android.skeleton.model.IToDoCRUDOperations;
 import org.dieschnittstelle.mobile.android.skeleton.model.RetrofitToDoCRUDOperationsImpl;
+import org.dieschnittstelle.mobile.android.skeleton.model.RoomToDoCRUDOperationsImpl;
 
 public class ToDoApplication extends Application {
 

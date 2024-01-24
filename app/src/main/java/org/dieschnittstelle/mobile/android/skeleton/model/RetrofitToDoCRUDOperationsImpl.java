@@ -1,5 +1,7 @@
 package org.dieschnittstelle.mobile.android.skeleton.model;
 
+import android.util.Log;
+
 import java.util.List;
 
 import retrofit2.Call;
@@ -43,6 +45,7 @@ public class RetrofitToDoCRUDOperationsImpl implements IToDoCRUDOperations {
     @Override
     public ToDo createToDo(ToDo item) {
         try {
+            Log.i(RetrofitToDoCRUDOperationsImpl.class.getSimpleName(), "item created: " + item.toString());
             return this.toDoResource.create(item).execute().body();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -70,6 +73,7 @@ public class RetrofitToDoCRUDOperationsImpl implements IToDoCRUDOperations {
     @Override
     public boolean updateToDo(ToDo item) {
         try {
+            Log.i(RetrofitToDoCRUDOperationsImpl.class.getSimpleName(), "item updated: " + item.toString());
             this.toDoResource.update(item.getId(),item);
             return true;
         } catch (Exception e) {
