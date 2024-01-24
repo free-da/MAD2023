@@ -43,15 +43,14 @@ import java.util.List;
 
 public class OverviewActivity extends AppCompatActivity {
 
-    private static final Comparator<ToDo> SORT_BY_CHECKED_AND_NAME = Comparator.comparing(ToDo::isDone).thenComparing(ToDo::getName);
-
     private ListView listView;
     private List<ToDo> listData = new ArrayList<>();
     private ArrayAdapter<ToDo> listViewAdapter;
 
+    private OverviewViewmodelImpl overviewViewmodel;
+
     private FloatingActionButton fab;
 
-    private Comparator<ToDo> currentSortMode = SORT_BY_CHECKED_AND_NAME;
     private ProgressBar progressBar;
     private IToDoCRUDOperations crudOperations;
 
@@ -114,7 +113,7 @@ public class OverviewActivity extends AppCompatActivity {
         });
 
         // obtain a view model, which may either be empty or contain items we have loaded before
-        OverviewViewmodelImpl overviewViewmodel = new ViewModelProvider(this).get(OverviewViewmodelImpl.class);
+        this.overviewViewmodel = new ViewModelProvider(this).get(OverviewViewmodelImpl.class);
 
         // check whether we have read the data items before or not
         if (overviewViewmodel.getItems() == null) {
@@ -122,6 +121,7 @@ public class OverviewActivity extends AppCompatActivity {
                 @Override
                 protected void onPreExecute() {
                     progressBar.setVisibility(View.VISIBLE);
+                    sortItems();
                 }
 
                 @Override
@@ -133,7 +133,6 @@ public class OverviewActivity extends AppCompatActivity {
                 protected void onPostExecute(List<ToDo> items) {
                     listViewAdapter.addAll(items);
                     overviewViewmodel.setItems(items);
-                    sortItems();
                     progressBar.setVisibility(ViewStub.GONE);
                 }
             }.execute();
@@ -224,7 +223,8 @@ public class OverviewActivity extends AppCompatActivity {
 
     public void sortItems() {
         showMessage("Sorting...");
-        this.listData.sort(currentSortMode);
-        this.listViewAdapter.notifyDataSetChanged();
+            this.listData.sort(overviewViewmodel.getCurrentSortMode());
+            this.listViewAdapter.notifyDataSetChanged();
+
     }
 }

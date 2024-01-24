@@ -74,7 +74,7 @@ public class RetrofitToDoCRUDOperationsImpl implements IToDoCRUDOperations {
     public boolean updateToDo(ToDo item) {
         try {
             Log.i(RetrofitToDoCRUDOperationsImpl.class.getSimpleName(), "item updated: " + item.toString());
-            this.toDoResource.update(item.getId(),item);
+            this.toDoResource.update(item.getId(),item).execute().body();
             return true;
         } catch (Exception e) {
             throw new RuntimeException(e);
