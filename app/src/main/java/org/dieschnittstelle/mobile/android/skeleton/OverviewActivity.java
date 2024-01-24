@@ -54,6 +54,8 @@ public class OverviewActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private IToDoCRUDOperations crudOperations;
 
+    private MADAsyncOperationRunner operationRunner;
+
     private ActivityResultLauncher<Intent> callDetailViewLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
@@ -116,7 +118,7 @@ public class OverviewActivity extends AppCompatActivity {
         this.overviewViewmodel = new ViewModelProvider(this).get(OverviewViewmodelImpl.class);
 
         // check whether we have read the data items before or not
-        if (overviewViewmodel.getItems() == null) {
+      /*  if (overviewViewmodel.getItems() == null) {
             new MADAsyncTask<Void,Void,List<ToDo>>() {
                 @Override
                 protected void onPreExecute() {
@@ -140,11 +142,28 @@ public class OverviewActivity extends AppCompatActivity {
         } else {
             listViewAdapter.addAll(overviewViewmodel.getItems());
             sortItems();
-        }
+        }*/
+
+        this.operationRunner = new MADAsyncOperationRunner(this,this.progressBar);
+        operationRunner.run(
+                // supplier (= the operation)
+                () -> crudOperations.readAllToDos(),
+                // consumer (= the reaction to the operation result)
+                items -> {
+                    listViewAdapter.addAll(items);
+                    this.sortItems();
+                }
+        );
     }
 
     public void checkedChangedForListitem(ToDo item) {
-        new MADAsyncTask<Void,Void,List<ToDo>>() {
+        this.operationRunner.run(() -> crudOperations.updateToDo(item),
+                changed -> {
+                    showMessage("Checked changed for: " + item.getName());
+                    this.sortItems();
+                }
+        );
+       /* new MADAsyncTask<Void,Void,List<ToDo>>() {
             @Override
             protected void onPreExecute() {
                 crudOperations.updateToDo(item);
@@ -160,7 +179,7 @@ public class OverviewActivity extends AppCompatActivity {
                 sortItems();
                 showMessage("Checked changed for: " + item.getName());
             }
-        }.execute();
+        }.execute();*/
 
     }
 
@@ -181,24 +200,28 @@ public class OverviewActivity extends AppCompatActivity {
         // 2. update the view
             this.runOnUiThread(() -> {
                 this.listViewAdapter.add(createdItem);
-                sortItems();
+                this.sortItems();
             });
         }).start();
 
     }
 
     public void onEditedItemReceived(ToDo item) {
-        new Thread(() -> {
+        this.operationRunner.run(
+                () -> this.crudOperations.updateToDo(item),
+                updated -> {
+                    int positionOfItemInList = listViewAdapter.getPosition(item);
+                    ToDo itemInList = listViewAdapter.getItem(positionOfItemInList);
+                    itemInList.setName(item.getName());
+                    itemInList.setDescription(item.getDescription());
+                    itemInList.setDone(item.isDone());
+                    this.sortItems();
+                });
+        /*new Thread(() -> {
             this.crudOperations.updateToDo(item);
             runOnUiThread(() -> {
-                int positionOfItemInList = listViewAdapter.getPosition(item);
-                ToDo itemInList = listViewAdapter.getItem(positionOfItemInList);
-                itemInList.setName(item.getName());
-                itemInList.setDescription(item.getDescription());
-                itemInList.setDone(item.isDone());
-                sortItems();
-            });
-        }).start();
+
+        }).start();*/
     }
 
     public void showMessage(String msg) {
