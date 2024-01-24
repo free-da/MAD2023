@@ -96,8 +96,14 @@ public class OverviewActivity extends AppCompatActivity {
         this.listViewAdapter = new ArrayAdapter<>(this, R.layout.activity_overview_listitem, listData) {
             @NonNull
             @Override
-            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                ActivityOverviewListitemBinding itemBinding = DataBindingUtil.inflate(getLayoutInflater(),R.layout.activity_overview_listitem,null,false);
+            public View getView(int position, @Nullable View recyclableListItemView, @NonNull ViewGroup parent) {
+                ActivityOverviewListitemBinding itemBinding = null;
+                if (recyclableListItemView != null) {
+                    itemBinding = (ActivityOverviewListitemBinding) recyclableListItemView.getTag();
+                } else {
+                    itemBinding = DataBindingUtil.inflate(getLayoutInflater(),R.layout.activity_overview_listitem,null,false);
+                    itemBinding.getRoot().setTag(itemBinding);
+                }
                 ToDo item = this.getItem(position);
                 itemBinding.setItem(item);
                 itemBinding.setController(OverviewActivity.this);
