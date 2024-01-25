@@ -54,6 +54,7 @@ public class DetailviewActivity extends AppCompatActivity {
 
         // C) pass the data to the view (it will care itself how to deal with them)
         this.binding.setViewmodel(this.viewmodel);
+        Log.i(DetailviewActivity.class.getSimpleName(),"errorStatus ( setting viewmodel): " + viewmodel.getErrorStatus().getValue());
     }
 
     @Override
