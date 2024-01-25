@@ -80,6 +80,11 @@ public class OverviewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (((ToDoApplication)getApplication()).isOfflineMode()) {
+            startActivity(new Intent(this,DetailviewActivity.class));
+        }
+
         setContentView(R.layout.activity_overview);
 
         this.crudOperations = ((ToDoApplication)getApplication()).getCRUDOperations();

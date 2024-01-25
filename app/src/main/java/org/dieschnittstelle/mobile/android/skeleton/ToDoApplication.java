@@ -13,6 +13,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class ToDoApplication extends Application {
     private IToDoCRUDOperations crudOperations;
+    private boolean offlineMode;
+
 
     public void onCreate() {
         super.onCreate();
@@ -21,10 +23,12 @@ public class ToDoApplication extends Application {
                 this.crudOperations = new RetrofitToDoCRUDOperationsImpl();
             } else {
                 this.crudOperations = new RoomToDoCRUDOperationsImpl(this);
+                this.offlineMode = true;
             }
             Toast.makeText(this, "Using CRUD Impl: " + crudOperations.getClass().getSimpleName(), Toast.LENGTH_SHORT).show();
         } catch (Exception e){
             this.crudOperations = new RoomToDoCRUDOperationsImpl(this);
+            this.offlineMode = true;
             Toast.makeText(this,"Some unexpected error occurred. Using CRUD Impl: " + crudOperations.getClass().getSimpleName(), Toast.LENGTH_SHORT).show();
         }
     }
@@ -49,6 +53,10 @@ public class ToDoApplication extends Application {
             }).start();
             return future;
 
+        }
+
+        public boolean isOfflineMode() {
+            return offlineMode;
         }
     }
 
