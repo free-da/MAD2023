@@ -9,16 +9,12 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class MADAsyncOperationRunner {
-
     private ProgressBar progressBar;
-
     private Activity owner;
-
     public MADAsyncOperationRunner(Activity owner, ProgressBar progressBar) {
         this.owner = owner;
         this.progressBar = progressBar;
     }
-
     public <T> void run(Supplier<T> asyncOperation, Consumer<T> operationResultConsumer) {
         if (progressBar != null) {
             progressBar.setVisibility((View.VISIBLE));

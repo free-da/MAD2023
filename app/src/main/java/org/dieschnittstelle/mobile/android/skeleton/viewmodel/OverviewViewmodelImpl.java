@@ -21,7 +21,7 @@ public class OverviewViewmodelImpl extends ViewModel implements IOverviewViewmod
     }
     @Override
     public List<ToDo> getItems() {
-        return null;
+        return this.items;
     }
 
     @Override

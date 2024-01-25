@@ -107,7 +107,7 @@ public class OverviewActivity extends AppCompatActivity {
         });
 
         // prepare the list view
-        this.listViewAdapter = new ArrayAdapter<>(this, R.layout.activity_overview_listitem, overviewViewmodel.getItems()) {
+        this.listViewAdapter = new ArrayAdapter<>(this,R.layout.activity_overview_listitem,overviewViewmodel.getItems()) {
 
             @NonNull
             @Override
