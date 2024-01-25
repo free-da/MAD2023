@@ -1,9 +1,19 @@
 package org.dieschnittstelle.mobile.android.skeleton;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
@@ -20,6 +30,18 @@ public class DetailviewActivity extends AppCompatActivity {
     public static final int ITEM_EDITED = 2;
     private ActivityDetailviewBinding binding;
     private DetailviewViewmodelImpl viewmodel;
+
+    private static String LOGGER = DetailviewActivity.class.getSimpleName();
+
+    private ActivityResultLauncher<Intent> showContactsLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    onContactSelected(result.getData());
+                }
+            }
+    );
+
     public DetailviewActivity() {
         Log.i(DetailviewActivity.class.getSimpleName(),"constructor invoked");
     }
@@ -70,4 +92,34 @@ public class DetailviewActivity extends AppCompatActivity {
         finish();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_detailview_menu,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.addContact) {
+            addContactToToDo();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void addContactToToDo() {
+        showContactsLauncher.launch(new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI));
+    }
+
+    private void onContactSelected(Intent result) {
+       // Log.i.(LOGGER,"onContactSelected(): " + result);
+        Uri selectedContactUri = result.getData();
+        Log.i(LOGGER,"onContactSelected(): selectedContactUri: " + selectedContactUri);
+
+        Cursor cursor = getContentResolver().query(selectedContactUri,null,null,null,null,null);
+        if (cursor.moveToFirst()) {
+            @SuppressLint("Range") String contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+        }
+    }
 }

@@ -1,8 +1,10 @@
 package org.dieschnittstelle.mobile.android.skeleton.viewmodel;
 
+import android.content.Intent;
 import android.util.Log;
 import android.view.inputmethod.EditorInfo;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -14,7 +16,6 @@ public class DetailviewViewmodelImpl extends ViewModel implements IDetailviewVie
 
     private ToDo item;
     private MutableLiveData<Boolean> savedOccurred = new MutableLiveData<>();
-
     @Override
     public ToDo getItem() {
         return item;
