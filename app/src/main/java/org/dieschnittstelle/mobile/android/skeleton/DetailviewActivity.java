@@ -113,13 +113,27 @@ public class DetailviewActivity extends AppCompatActivity {
     }
 
     private void onContactSelected(Intent result) {
-       // Log.i.(LOGGER,"onContactSelected(): " + result);
+       // Log.i(LOGGER,"onContactSelected(): " + result);
         Uri selectedContactUri = result.getData();
         Log.i(LOGGER,"onContactSelected(): selectedContactUri: " + selectedContactUri);
 
         Cursor cursor = getContentResolver().query(selectedContactUri,null,null,null,null,null);
         if (cursor.moveToFirst()) {
             @SuppressLint("Range") String contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+            Log.i(LOGGER,"contactName: " + contactName);
+            @SuppressLint("Range") long internalContactId = cursor.getLong(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+            Log.i(LOGGER,"internalContactId: " + internalContactId);
+            this.viewmodel.getItem().getContactIds().add(String.valueOf(internalContactId));
+            showContactDetailsForInternalId(internalContactId);
+        }
+    }
+
+    public void showContactDetailsForInternalId(long internalContactId) {
+        Log.i(LOGGER,"showContactDetailsForInternalId(): " + internalContactId);
+        Cursor cursor = getContentResolver().query(ContactsContract.Contacts.CONTENT_URI,null,ContactsContract.Contacts._ID + "=?",new String[]{String.valueOf(internalContactId)},null);
+        if (cursor.moveToFirst()) {
+            @SuppressLint("Range") String contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+            Log.i(LOGGER,"contactName for id: " + contactName);
         }
     }
 }
