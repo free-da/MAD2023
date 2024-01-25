@@ -44,7 +44,6 @@ import java.util.List;
 public class OverviewActivity extends AppCompatActivity {
 
     private ListView listView;
-    private List<ToDo> listData = new ArrayList<>();
     private ArrayAdapter<ToDo> listViewAdapter;
 
     private OverviewViewmodelImpl overviewViewmodel;
@@ -89,16 +88,27 @@ public class OverviewActivity extends AppCompatActivity {
 
         this.crudOperations = ((ToDoApplication)getApplication()).getCRUDOperations();
 
+        // obtain a view model, which may either be empty or contain items we have loaded before
+        overviewViewmodel = new ViewModelProvider(this).get(OverviewViewmodelImpl.class);
+        boolean initialViewmodel = false;
+        if (overviewViewmodel.getItems() == null) {
+            overviewViewmodel.setItems(new ArrayList<>());
+            initialViewmodel = true;
+        }
+
         this.listView = findViewById(R.id.listView);
         this.fab = findViewById(R.id.fab);
         this.progressBar = findViewById(R.id.progressBar);
+
+        this.operationRunner = new MADAsyncOperationRunner(this,this.progressBar);
 
         this.fab.setOnClickListener(view -> {
             onCreateNewItem();
         });
 
         // prepare the list view
-        this.listViewAdapter = new ArrayAdapter<>(this, R.layout.activity_overview_listitem, listData) {
+        this.listViewAdapter = new ArrayAdapter<>(this, R.layout.activity_overview_listitem, overviewViewmodel.getItems()) {
+
             @NonNull
             @Override
             public View getView(int position, @Nullable View recyclableListItemView, @NonNull ViewGroup parent) {
@@ -115,7 +125,6 @@ public class OverviewActivity extends AppCompatActivity {
                 return itemBinding.getRoot();
             }
         };
-
         this.listView.setAdapter(this.listViewAdapter);
         this.listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -125,46 +134,17 @@ public class OverviewActivity extends AppCompatActivity {
             }
         });
 
-        // obtain a view model, which may either be empty or contain items we have loaded before
-        this.overviewViewmodel = new ViewModelProvider(this).get(OverviewViewmodelImpl.class);
-
-        // check whether we have read the data items before or not
-      /*  if (overviewViewmodel.getItems() == null) {
-            new MADAsyncTask<Void,Void,List<ToDo>>() {
-                @Override
-                protected void onPreExecute() {
-                    progressBar.setVisibility(View.VISIBLE);
-                    sortItems();
-                }
-
-                @Override
-                protected List<ToDo> doInBackground(Void... voids) {
-                    return crudOperations.readAllToDos();
-                }
-
-                @Override
-                protected void onPostExecute(List<ToDo> items) {
-                    listViewAdapter.addAll(items);
-                    overviewViewmodel.setItems(items);
-                    progressBar.setVisibility(ViewStub.GONE);
-                }
-            }.execute();
-
-        } else {
-            listViewAdapter.addAll(overviewViewmodel.getItems());
-            sortItems();
-        }*/
-
-        this.operationRunner = new MADAsyncOperationRunner(this,this.progressBar);
-        operationRunner.run(
-                // supplier (= the operation)
-                () -> crudOperations.readAllToDos(),
-                // consumer (= the reaction to the operation result)
-                items -> {
-                    listViewAdapter.addAll(items);
-                    this.sortItems();
-                }
-        );
+        if (initialViewmodel) {
+            operationRunner.run(
+                    // supplier (= the operation)
+                    () -> crudOperations.readAllToDos(),
+                    // consumer (= the reaction to the operation result)
+                    items -> {
+                        overviewViewmodel.getItems().addAll(items);
+                        this.sortItems();
+                    }
+            );
+        }
     }
 
     public void checkedChangedForListitem(ToDo item) {
@@ -174,24 +154,6 @@ public class OverviewActivity extends AppCompatActivity {
                     this.sortItems();
                 }
         );
-       /* new MADAsyncTask<Void,Void,List<ToDo>>() {
-            @Override
-            protected void onPreExecute() {
-                crudOperations.updateToDo(item);
-            }
-
-            @Override
-            protected List<ToDo> doInBackground(Void... voids) {
-               return crudOperations.readAllToDos();
-            }
-
-            @Override
-            protected void onPostExecute(List<ToDo> items) {
-                sortItems();
-                showMessage("Checked changed for: " + item.getName());
-            }
-        }.execute();*/
-
     }
 
     public void onListitemSelected(ToDo listitem) {
@@ -228,11 +190,6 @@ public class OverviewActivity extends AppCompatActivity {
                     itemInList.setDone(item.isDone());
                     this.sortItems();
                 });
-        /*new Thread(() -> {
-            this.crudOperations.updateToDo(item);
-            runOnUiThread(() -> {
-
-        }).start();*/
     }
 
     public void showMessage(String msg) {
@@ -256,9 +213,8 @@ public class OverviewActivity extends AppCompatActivity {
     }
 
     public void sortItems() {
-        showMessage("Sorting...");
-            this.listData.sort(overviewViewmodel.getCurrentSortMode());
-            this.listViewAdapter.notifyDataSetChanged();
+        this.overviewViewmodel.getItems().sort(overviewViewmodel.getCurrentSortMode());
+        this.listViewAdapter.notifyDataSetChanged();
 
     }
 }
