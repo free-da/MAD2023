@@ -30,6 +30,7 @@ public class DetailviewActivity extends AppCompatActivity {
 
         // A) determine the view
         this.binding = DataBindingUtil.setContentView(this,R.layout.activity_detailview);
+        this.binding.setLifecycleOwner(this);
 
         // B) instantiate or reuse the viewmodel
         this.viewmodel = new ViewModelProvider(this).get(DetailviewViewmodelImpl.class);

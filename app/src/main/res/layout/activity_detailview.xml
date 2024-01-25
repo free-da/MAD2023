@@ -19,6 +19,9 @@
             android:layout_height="wrap_content">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/itemName"
+                android:error="@{viewmodel.errorStatus}"
+                android:onEditorAction="@{(view,actionId,event) -> viewmodel.checkFieldInputCompleted(actionId)}"
+                android:onTextChanged="@{(a,s,b,c) -> viewmodel.onNameFieldInputChanged()}"
                 android:text="@={viewmodel.item.name}"
                 android:singleLine="true"
                 android:imeOptions="actionNext"
