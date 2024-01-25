@@ -184,10 +184,8 @@ public class OverviewActivity extends AppCompatActivity {
                 () -> this.crudOperations.updateToDo(item),
                 updated -> {
                     int positionOfItemInList = listViewAdapter.getPosition(item);
-                    ToDo itemInList = listViewAdapter.getItem(positionOfItemInList);
-                    itemInList.setName(item.getName());
-                    itemInList.setDescription(item.getDescription());
-                    itemInList.setDone(item.isDone());
+                    this.overviewViewmodel.getItems().remove(positionOfItemInList);
+                    this.overviewViewmodel.getItems().add(item);
                     this.sortItems();
                 });
     }
