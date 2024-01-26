@@ -1,8 +1,10 @@
 package org.dieschnittstelle.mobile.android.skeleton;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,6 +24,8 @@ import androidx.lifecycle.ViewModelProvider;
 import org.dieschnittstelle.mobile.android.skeleton.databinding.ActivityDetailviewBinding;
 import org.dieschnittstelle.mobile.android.skeleton.model.ToDo;
 import org.dieschnittstelle.mobile.android.skeleton.viewmodel.DetailviewViewmodelImpl;
+
+import java.util.Arrays;
 
 public class DetailviewActivity extends AppCompatActivity {
 
@@ -129,11 +133,28 @@ public class DetailviewActivity extends AppCompatActivity {
     }
 
     public void showContactDetailsForInternalId(long internalContactId) {
-        Log.i(LOGGER,"showContactDetailsForInternalId(): " + internalContactId);
-        Cursor cursor = getContentResolver().query(ContactsContract.Contacts.CONTENT_URI,null,ContactsContract.Contacts._ID + "=?",new String[]{String.valueOf(internalContactId)},null);
-        if (cursor.moveToFirst()) {
-            @SuppressLint("Range") String contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-            Log.i(LOGGER,"contactName for id: " + contactName);
+        if (hasContactPermission()) {
+            Log.i(LOGGER,"showContactDetailsForInternalId(): " + internalContactId);
+            Cursor cursor = getContentResolver().query(ContactsContract.Contacts.CONTENT_URI,null,ContactsContract.Contacts._ID + "=?",new String[]{String.valueOf(internalContactId)},null);
+            if (cursor.moveToFirst()) {
+                @SuppressLint("Range") String contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                Log.i(LOGGER,"contactName for id: " + contactName);
+            }
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        Log.i(LOGGER,"onRequestPermissionResult(): " + Arrays.asList(permissions) + ", " + Arrays.asList(grantResults));
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    public boolean hasContactPermission() {
+        int hasReadContactPermission = checkSelfPermission(Manifest.permission.READ_CONTACTS);
+        if (hasReadContactPermission == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        }
+        requestPermissions(new String[]{Manifest.permission.READ_CONTACTS},1);
+        return false;
     }
 }
