@@ -25,6 +25,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -34,6 +35,7 @@ import org.dieschnittstelle.mobile.android.skeleton.model.IToDoCRUDOperations;
 import org.dieschnittstelle.mobile.android.skeleton.model.RetrofitToDoCRUDOperationsImpl;
 import org.dieschnittstelle.mobile.android.skeleton.model.RoomToDoCRUDOperationsImpl;
 import org.dieschnittstelle.mobile.android.skeleton.model.SimpleToDoCRUDOperationsImpl;
+import org.dieschnittstelle.mobile.android.skeleton.model.SyncedToDoCRUDOperationsImpl;
 import org.dieschnittstelle.mobile.android.skeleton.model.ToDo;
 import org.dieschnittstelle.mobile.android.skeleton.viewmodel.OverviewViewmodelImpl;
 
@@ -205,6 +207,12 @@ public class OverviewActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.sortItems) {
             this.sortItems();
             return true;
+//        } else if (item.getItemId() == R.id.deleAllRemoteItems) {
+//            if (this.crudOperations instanceof SyncedToDoCRUDOperationsImpl) {
+//                ((SyncedToDoCRUDOperationsImpl)this.crudOperations).deleteAllTemoteItems();
+//            } else {
+//                Toast.makeText(this,"deleteAllRemote is not available", Toast.LENGTH_SHORT).show();
+//            }
         } else {
             return super.onOptionsItemSelected(item);
         }

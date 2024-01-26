@@ -90,4 +90,5 @@ public class ToDo implements Serializable {
     public void setContactIds(List<String> contactIds) {
         this.contactIds = contactIds;
     }
+
 }

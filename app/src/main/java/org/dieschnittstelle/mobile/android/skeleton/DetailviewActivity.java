@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,10 +23,13 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.dieschnittstelle.mobile.android.skeleton.databinding.ActivityDetailviewBinding;
+import org.dieschnittstelle.mobile.android.skeleton.model.Contacts;
 import org.dieschnittstelle.mobile.android.skeleton.model.ToDo;
 import org.dieschnittstelle.mobile.android.skeleton.viewmodel.DetailviewViewmodelImpl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class DetailviewActivity extends AppCompatActivity {
 
@@ -112,9 +116,40 @@ public class DetailviewActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.addContact) {
             addContactToToDo();
             return true;
+        } else if (item.getItemId() == R.id.sendSMS) {
+            ArrayList<Contacts> contacts = prepareContactsForSms();
+            sendSMS(contacts);
+            return true;
         } else {
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    public ArrayList<Contacts> prepareContactsForSms() {
+
+        String[] contactIds = viewmodel.getItem().getContactIds().toArray(new String[0]);
+        ArrayList<Contacts> contacts = new ArrayList<>();
+        for (String id : contactIds) {
+            Cursor cursor = getContentResolver().query(
+                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                    null,
+                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID + "=?",
+                    new String[]{String.valueOf(id)},
+                    null,
+                    null);
+            Log.i(LOGGER,"contactID-String-length: " + contactIds.length);
+            Log.i(LOGGER,"contactID-String: " + TextUtils.join(", ", contactIds));
+            if (cursor.moveToFirst()) {
+                @SuppressLint("Range") String contactName = cursor.getLong(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                Log.i(LOGGER, "contactName: " + contactName);
+                @SuppressLint("Range") String contactNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                Log.i(LOGGER, "contactNumber: " + contactName);
+                @SuppressLint("Range") String contactEmail = cursor.getLong(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS));
+                Log.i(LOGGER, "contactEmail: " + contactEmail);
+                contacts.add(new Contacts(contactName,contactNumber,contactEmail));
+            }
+        }
+        return contacts;
     }
 
     public void addContactToToDo() {
@@ -195,5 +230,14 @@ public class DetailviewActivity extends AppCompatActivity {
         }
         requestPermissions(new String[]{Manifest.permission.READ_CONTACTS},1);
         return false;
+    }
+
+    public void sendSMS(ArrayList<Contacts> contacts) {
+        String mobileNumber = "000";
+
+        Uri smsReceiverUri = Uri.parse("smsto:" + mobileNumber);
+        Intent smsIntent = new Intent(Intent.ACTION_SENDTO,smsReceiverUri);
+        smsIntent.putExtra("sms_body", "Hello MAD S23!");
+        startActivity(smsIntent);
     }
 }
