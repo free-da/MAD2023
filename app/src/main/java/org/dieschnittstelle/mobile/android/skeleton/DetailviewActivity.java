@@ -132,21 +132,55 @@ public class DetailviewActivity extends AppCompatActivity {
         }
     }
 
+    private long lastSelectedInternalContactId = -1;
+
     public void showContactDetailsForInternalId(long internalContactId) {
+        lastSelectedInternalContactId = internalContactId;
         if (hasContactPermission()) {
             Log.i(LOGGER,"showContactDetailsForInternalId(): " + internalContactId);
-            Cursor cursor = getContentResolver().query(ContactsContract.Contacts.CONTENT_URI,null,ContactsContract.Contacts._ID + "=?",new String[]{String.valueOf(internalContactId)},null);
+            Cursor cursor = getContentResolver().query(
+                    ContactsContract.Contacts.CONTENT_URI,
+                    null,
+                    ContactsContract.Contacts._ID + "=?",
+                    new String[]{String.valueOf(internalContactId)},
+                    null);
             if (cursor.moveToFirst()) {
                 @SuppressLint("Range") String contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                 Log.i(LOGGER,"contactName for id: " + contactName);
+            }
+            cursor = getContentResolver().query(
+                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                    null,
+                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID + "=?",
+                    new String[]{String.valueOf(internalContactId)},
+                    null);
+            while (cursor.moveToNext()) {
+                String phoneNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                int phoneNumberType = cursor.getInt(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
+                boolean isMobile = (phoneNumberType == ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE);
+                Log.i(LOGGER, "phoneNumber: " + phoneNumber );
+                Log.i(LOGGER, "isMobile: " + isMobile);
+            }
+            cursor = getContentResolver().query(
+                    ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+                    null,
+                    ContactsContract.CommonDataKinds.Email.CONTACT_ID + "=?",
+                    new String[]{String.valueOf(internalContactId)},
+                    null);
+            while (cursor.moveToNext()) {
+                String emailaddr = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS));
+                Log.i(LOGGER,"emailaddr: " + emailaddr);
             }
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.i(LOGGER,"onRequestPermissionResult(): " + Arrays.asList(permissions) + ", " + Arrays.asList(grantResults));
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Log.i(LOGGER,"onRequestPermissionResult(): " + Arrays.asList(permissions) + ", " + Arrays.asList(grantResults));
+        if (lastSelectedInternalContactId != -1) {
+            showContactDetailsForInternalId(lastSelectedInternalContactId);
+        }
     }
 
     public boolean hasContactPermission() {
