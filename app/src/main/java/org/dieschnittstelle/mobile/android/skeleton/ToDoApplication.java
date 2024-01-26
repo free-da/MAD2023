@@ -6,6 +6,7 @@ import android.widget.Toast;
 import org.dieschnittstelle.mobile.android.skeleton.model.IToDoCRUDOperations;
 import org.dieschnittstelle.mobile.android.skeleton.model.RetrofitToDoCRUDOperationsImpl;
 import org.dieschnittstelle.mobile.android.skeleton.model.RoomToDoCRUDOperationsImpl;
+import org.dieschnittstelle.mobile.android.skeleton.model.SyncedToDoCRUDOperationsImpl;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -20,7 +21,7 @@ public class ToDoApplication extends Application {
         super.onCreate();
         try {
             if (checkConnectivity().get()) {
-                this.crudOperations = new RetrofitToDoCRUDOperationsImpl();
+                this.crudOperations = new SyncedToDoCRUDOperationsImpl(this);
             } else {
                 this.crudOperations = new RoomToDoCRUDOperationsImpl(this);
                 this.offlineMode = true;

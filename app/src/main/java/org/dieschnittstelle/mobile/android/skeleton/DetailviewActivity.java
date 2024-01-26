@@ -29,6 +29,10 @@ import java.util.Arrays;
 
 public class DetailviewActivity extends AppCompatActivity {
 
+
+    //user authentication
+    // email: s@bht.de
+    // pwd: 000000
     public static final String ARG_ITEM = "item";
     public static final int ITEM_CREATED = 1;
     public static final int ITEM_EDITED = 2;
