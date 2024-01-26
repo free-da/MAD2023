@@ -2,4 +2,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:title="ADD CONTACT" app:showAsAction="ifRoom" android:icon="@drawable/contacts_icon" android:id="@+id/addContact"/>
     <item android:id="@+id/sendSMS" android:title="SEND SMS" app:showAsAction="never"/>
+    <item android:id="@+id/sendEmail" android:title="SEND E-Mail" app:showAsAction="never"/>
 </menu>

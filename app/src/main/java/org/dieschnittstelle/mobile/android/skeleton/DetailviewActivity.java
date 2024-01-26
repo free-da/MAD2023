@@ -118,15 +118,19 @@ public class DetailviewActivity extends AppCompatActivity {
             addContactToToDo();
             return true;
         } else if (item.getItemId() == R.id.sendSMS) {
-            ArrayList<Contacts> contacts = prepareContactsForSms();
+            ArrayList<Contacts> contacts = prepareContactsForMessaging();
             sendSMS(contacts);
+            return true;
+        } else if (item.getItemId() == R.id.sendEmail) {
+            ArrayList<Contacts> contacts = prepareContactsForMessaging();
+            sendEmail(contacts);
             return true;
         } else {
             return super.onOptionsItemSelected(item);
         }
     }
 
-    public ArrayList<Contacts> prepareContactsForSms() {
+    public ArrayList<Contacts> prepareContactsForMessaging() {
 
         String[] contactIds = viewmodel.getItem().getContactIds().toArray(new String[0]);
         ArrayList<Contacts> contacts = new ArrayList<>();
@@ -140,15 +144,26 @@ public class DetailviewActivity extends AppCompatActivity {
                     null);
             Log.i(LOGGER,"contactID-String-length: " + contactIds.length);
             Log.i(LOGGER,"contactID-String: " + TextUtils.join(", ", contactIds));
+            String contactName = "";
+            String contactNumber = "";
+            String contactEmail = "";
             if (cursor.moveToFirst()) {
-                @SuppressLint("Range") String contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                 Log.i(LOGGER, "contactName: " + contactName);
-                @SuppressLint("Range") String contactNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                contactNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                 Log.i(LOGGER, "contactNumber: " + contactNumber);
-                @SuppressLint("Range") String contactEmail = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS));
-                Log.i(LOGGER, "contactEmail: " + contactEmail);
-                contacts.add(new Contacts(contactName,contactNumber,contactEmail));
             }
+            //https://androidexample.com/get-contact-emails-content-provider
+            cursor = getContentResolver().query(
+                    ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+                    null,
+                    ContactsContract.CommonDataKinds.Email.CONTACT_ID
+                            + " = " + id, null, null);
+            if (cursor.moveToFirst()) {
+                contactEmail = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+                Log.i(LOGGER, "contactEmail: " + contactEmail);
+            }
+            contacts.add(new Contacts(contactName,contactNumber,contactEmail));
         }
         return contacts;
     }
@@ -251,4 +266,33 @@ public class DetailviewActivity extends AppCompatActivity {
         smsIntent.putExtra("sms_body", smsText);
         startActivity(smsIntent);
     }
+
+    public void sendEmail(ArrayList<Contacts> contacts) {
+        List<String> listOfEmailAddresses = contacts.stream()
+                .map(t->t.getEmailaddress())
+                .collect(Collectors.toList());
+        Log.i(LOGGER,"Collect List Emails: "+listOfEmailAddresses);
+//        String separator = "; ";
+//        String emailAddressesOfAllRecipients = String.join(separator, listOfEmailAddresses);;
+
+        String subject = "MAD2324 ToDo: " + viewmodel.getItem().getName();
+        composeEmail(listOfEmailAddresses.toArray(new String[0]),subject);
+//        Log.i(LOGGER,"Email Addresses as String: " + emailAddressesOfAllRecipients);
+//        Uri smsReceiverUri = Uri.parse("smsto:" + emailAddressesOfAllRecipients);
+//        Intent smsIntent = new Intent(Intent.ACTION_SENDTO,smsReceiverUri);
+//        String smsText = "MAD 2324: ToDo für [" + emailAddressesOfAllRecipients + "]\n " + viewmodel.getItem().getName() + "\n" + viewmodel.getItem().getDescription();
+//        smsIntent.putExtra("sms_body", smsText);
+//        startActivity(smsIntent);
+    }
+
+    public void composeEmail(String[] addresses, String subject) {
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:")); // only email apps should handle this
+        intent.putExtra(Intent.EXTRA_EMAIL, addresses);
+        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
+
 }
