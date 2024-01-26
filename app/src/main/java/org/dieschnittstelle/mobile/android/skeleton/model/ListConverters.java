@@ -16,7 +16,7 @@ public class ListConverters {
         if (stringList == null) {
             return "";
         }
-        return stringList.stream().collect(Collectors.joining(SEPARATOR));
+        return stringList.stream().distinct().collect(Collectors.joining(SEPARATOR));
     }
 
     @TypeConverter

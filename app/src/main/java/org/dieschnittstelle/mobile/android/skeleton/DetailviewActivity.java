@@ -69,6 +69,7 @@ public class DetailviewActivity extends AppCompatActivity {
             if (item == null) {
                 this.viewmodel.setItem(new ToDo());
             } else {
+                Log.i(LOGGER,"got item with contacts: " + item.getContactIds());
                 this.viewmodel.setItem(item);
             }
         } else {

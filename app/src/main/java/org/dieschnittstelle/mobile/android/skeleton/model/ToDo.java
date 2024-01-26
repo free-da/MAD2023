@@ -81,6 +81,9 @@ public class ToDo implements Serializable {
     }
 
     public List<String> getContactIds() {
+        if (contactIds == null) {
+            this.contactIds = new ArrayList<>();
+        }
         return contactIds;
     }
 
