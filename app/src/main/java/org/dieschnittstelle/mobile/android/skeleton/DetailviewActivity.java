@@ -30,6 +30,7 @@ import org.dieschnittstelle.mobile.android.skeleton.viewmodel.DetailviewViewmode
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DetailviewActivity extends AppCompatActivity {
 
@@ -140,11 +141,11 @@ public class DetailviewActivity extends AppCompatActivity {
             Log.i(LOGGER,"contactID-String-length: " + contactIds.length);
             Log.i(LOGGER,"contactID-String: " + TextUtils.join(", ", contactIds));
             if (cursor.moveToFirst()) {
-                @SuppressLint("Range") String contactName = cursor.getLong(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                @SuppressLint("Range") String contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                 Log.i(LOGGER, "contactName: " + contactName);
                 @SuppressLint("Range") String contactNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                Log.i(LOGGER, "contactNumber: " + contactName);
-                @SuppressLint("Range") String contactEmail = cursor.getLong(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS));
+                Log.i(LOGGER, "contactNumber: " + contactNumber);
+                @SuppressLint("Range") String contactEmail = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS));
                 Log.i(LOGGER, "contactEmail: " + contactEmail);
                 contacts.add(new Contacts(contactName,contactNumber,contactEmail));
             }
@@ -233,11 +234,21 @@ public class DetailviewActivity extends AppCompatActivity {
     }
 
     public void sendSMS(ArrayList<Contacts> contacts) {
-        String mobileNumber = "000";
+        List<String> listOfPhoneNumbers = contacts.stream()
+                .map(t->t.getPhoneNumber())
+                .collect(Collectors.toList());
+        Log.i(LOGGER,"Collect List: "+listOfPhoneNumbers);
+        String separator = "; ";
+        if(android.os.Build.MANUFACTURER.equalsIgnoreCase("samsung")){
+            separator = ", ";
+        }
+        String mobileNumbersOfAllRecipients = String.join(separator, listOfPhoneNumbers);;
 
-        Uri smsReceiverUri = Uri.parse("smsto:" + mobileNumber);
+        Log.i(LOGGER,"Phone numbers as String: " + mobileNumbersOfAllRecipients);
+        Uri smsReceiverUri = Uri.parse("smsto:" + mobileNumbersOfAllRecipients);
         Intent smsIntent = new Intent(Intent.ACTION_SENDTO,smsReceiverUri);
-        smsIntent.putExtra("sms_body", "Hello MAD S23!");
+        String smsText = "MAD 2324: ToDo für [" + mobileNumbersOfAllRecipients + "]\n " + viewmodel.getItem().getName() + "\n" + viewmodel.getItem().getDescription();
+        smsIntent.putExtra("sms_body", smsText);
         startActivity(smsIntent);
     }
 }
