@@ -9,7 +9,6 @@ import java.util.List;
 
 public class OverviewViewmodelImpl extends ViewModel implements IOverviewViewmodel {
 
- //   private static final Comparator<ToDo> SORT_BY_CHECKED_AND_NAME = Comparator.comparing(ToDo::getName);
     private static final Comparator<ToDo> SORT_BY_CHECKED_AND_NAME = Comparator.comparing(ToDo::isDone).thenComparing(ToDo::getName);
 
     private Comparator<ToDo> currentSortMode = SORT_BY_CHECKED_AND_NAME;

@@ -5,7 +5,6 @@
         <variable
             name="viewmodel"
             type="org.dieschnittstelle.mobile.android.skeleton.viewmodel.IDetailviewViewmodel" />
-
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -64,6 +63,15 @@
                 android:layout_height="wrap_content"
                 />
         </com.google.android.material.textfield.TextInputLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/itemDescriptionWrapper" />
+<!--        <include layout="@layout/contact_listitem_detailview"/>-->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
             android:onClick="@{() -> viewmodel.onItemSaved()}"

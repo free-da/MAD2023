@@ -21,6 +21,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.dieschnittstelle.mobile.android.skeleton.databinding.ActivityDetailviewBinding;
 import org.dieschnittstelle.mobile.android.skeleton.model.Contacts;
@@ -80,6 +82,14 @@ public class DetailviewActivity extends AppCompatActivity {
             } else {
                 Log.i(LOGGER,"got item with contacts: " + item.getContactIds());
                 this.viewmodel.setItem(item);
+          //      https://guides.codepath.com/android/using-the-recyclerview
+                RecyclerView recyclerView = findViewById(R.id.recyclerView);
+                ArrayList<Contacts> contacts = constructArrayListOfContactsFromContactIds();
+                List<String> listOfNames = contacts.stream()
+                        .map(t->t.getName())
+                        .collect(Collectors.toList());
+                recyclerView.setAdapter(new ContactListDetailViewAdapter(listOfNames.toArray(new String[0])));
+                recyclerView.setLayoutManager(new LinearLayoutManager(this));
             }
         } else {
             Log.i(DetailviewActivity.class.getSimpleName(),"use item from viewmodel: " + this.viewmodel.getItem());
@@ -90,7 +100,7 @@ public class DetailviewActivity extends AppCompatActivity {
 
         // C) pass the data to the view (it will care itself how to deal with them)
         this.binding.setViewmodel(this.viewmodel);
-        Log.i(DetailviewActivity.class.getSimpleName(),"errorStatus ( setting viewmodel): " + viewmodel.getErrorStatus().getValue());
+        Log.i(DetailviewActivity.class.getSimpleName(),"errorStatus (setting viewmodel): " + viewmodel.getErrorStatus().getValue());
     }
 
     @Override
@@ -118,11 +128,11 @@ public class DetailviewActivity extends AppCompatActivity {
             addContactToToDo();
             return true;
         } else if (item.getItemId() == R.id.sendSMS) {
-            ArrayList<Contacts> contacts = prepareContactsForMessaging();
+            ArrayList<Contacts> contacts = constructArrayListOfContactsFromContactIds();
             sendSMS(contacts);
             return true;
         } else if (item.getItemId() == R.id.sendEmail) {
-            ArrayList<Contacts> contacts = prepareContactsForMessaging();
+            ArrayList<Contacts> contacts = constructArrayListOfContactsFromContactIds();
             composeEmail(contacts);
             return true;
         } else {
@@ -130,7 +140,7 @@ public class DetailviewActivity extends AppCompatActivity {
         }
     }
 
-    public ArrayList<Contacts> prepareContactsForMessaging() {
+    public ArrayList<Contacts> constructArrayListOfContactsFromContactIds() {
 
         String[] contactIds = viewmodel.getItem().getContactIds().toArray(new String[0]);
         ArrayList<Contacts> contacts = new ArrayList<>();
