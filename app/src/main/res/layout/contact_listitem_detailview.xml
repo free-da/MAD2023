@@ -6,6 +6,9 @@
         <variable
             name="contact"
             type="org.dieschnittstelle.mobile.android.skeleton.model.Contacts" />
+        <variable
+            name="viewmodel"
+            type="org.dieschnittstelle.mobile.android.skeleton.viewmodel.DetailviewViewmodelImpl" />
     </data>
 
     <LinearLayout
@@ -22,14 +25,16 @@
             android:layout_weight="1"
             android:text="@{contact.name}"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/delete_contact"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:textSize="10sp" />
+            android:src="@drawable/delete_icon"
+            android:contentDescription="Delete contact from ToDo"
+            android:textSize="10sp"
+            android:onClick="@{() -> viewmodel.onContactDeleteButtonClicked()}"/>
 
-<!--        app:srcCompat="@drawable/delete_icon"-->
     </LinearLayout>
 </layout>

@@ -1,7 +1,6 @@
 package org.dieschnittstelle.mobile.android.skeleton;
 
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,9 +8,11 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.dieschnittstelle.mobile.android.skeleton.model.Contacts;
+
 public class ContactListDetailViewAdapter extends RecyclerView.Adapter<ContactListDetailViewAdapter.ViewHolder> {
 
-    private String[] localDataSet;
+    private Contacts[] contactArray;
 
     /**
      * Provide a reference to the type of views that you are using
@@ -35,12 +36,11 @@ public class ContactListDetailViewAdapter extends RecyclerView.Adapter<ContactLi
     /**
      * Initialize the dataset of the Adapter
      *
-     * @param dataSet String[] containing the data to populate views to be used
+     * @param contactArray String[] containing the data to populate views to be used
      * by RecyclerView
      */
-    public ContactListDetailViewAdapter(String[] dataSet) {
-        Log.i(ContactListDetailViewAdapter.class.getSimpleName(),"dataSet: " + String.join(", ", dataSet));
-        localDataSet = dataSet;
+    public ContactListDetailViewAdapter(Contacts[] contactArray) {
+        this.contactArray = contactArray;
     }
 
     // Create new views (invoked by the layout manager)
@@ -59,13 +59,13 @@ public class ContactListDetailViewAdapter extends RecyclerView.Adapter<ContactLi
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        viewHolder.getTextView().setText(localDataSet[position]);
+        viewHolder.getTextView().setText(contactArray[position].getName());
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return localDataSet.length;
+        return contactArray.length;
     }
 }
 

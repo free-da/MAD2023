@@ -13,6 +13,9 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -83,16 +86,7 @@ public class DetailviewActivity extends AppCompatActivity {
             } else {
                 Log.i(LOGGER,"got item with contacts: " + item.getContactIds());
                 this.viewmodel.setItem(item);
-          //      https://guides.codepath.com/android/using-the-recyclerview
-                RecyclerView recyclerView = findViewById(R.id.recyclerView);
-                ArrayList<Contacts> contacts = constructArrayListOfContactsFromContactIds();
-                List<String> listOfNames = contacts.stream()
-                        .map(t->t.getName())
-                        .collect(Collectors.toList());
-                RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
-                recyclerView.setAdapter(new ContactListDetailViewAdapter(listOfNames.toArray(new String[0])));
-                recyclerView.addItemDecoration(itemDecoration);
-                recyclerView.setLayoutManager(new LinearLayoutManager(this));
+                addContactListToDetailView();
             }
         } else {
             Log.i(DetailviewActivity.class.getSimpleName(),"use item from viewmodel: " + this.viewmodel.getItem());
@@ -104,6 +98,16 @@ public class DetailviewActivity extends AppCompatActivity {
         // C) pass the data to the view (it will care itself how to deal with them)
         this.binding.setViewmodel(this.viewmodel);
         Log.i(DetailviewActivity.class.getSimpleName(),"errorStatus (setting viewmodel): " + viewmodel.getErrorStatus().getValue());
+    }
+
+    private void addContactListToDetailView() {
+        //      https://guides.codepath.com/android/using-the-recyclerview
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        ArrayList<Contacts> contacts = constructArrayListOfContactsFromContactIds();
+        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        recyclerView.setAdapter(new ContactListDetailViewAdapter(contacts.toArray(new Contacts[0])));
+        recyclerView.addItemDecoration(itemDecoration);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
     @Override
