@@ -123,7 +123,7 @@ public class DetailviewActivity extends AppCompatActivity {
             return true;
         } else if (item.getItemId() == R.id.sendEmail) {
             ArrayList<Contacts> contacts = prepareContactsForMessaging();
-            sendEmail(contacts);
+            composeEmail(contacts);
             return true;
         } else {
             return super.onOptionsItemSelected(item);
@@ -267,32 +267,27 @@ public class DetailviewActivity extends AppCompatActivity {
         startActivity(smsIntent);
     }
 
-    public void sendEmail(ArrayList<Contacts> contacts) {
+    public void composeEmail(ArrayList<Contacts> contacts) {
         List<String> listOfEmailAddresses = contacts.stream()
                 .map(t->t.getEmailaddress())
                 .collect(Collectors.toList());
         Log.i(LOGGER,"Collect List Emails: "+listOfEmailAddresses);
-//        String separator = "; ";
-//        String emailAddressesOfAllRecipients = String.join(separator, listOfEmailAddresses);;
-
         String subject = "MAD2324 ToDo: " + viewmodel.getItem().getName();
-        composeEmail(listOfEmailAddresses.toArray(new String[0]),subject);
-//        Log.i(LOGGER,"Email Addresses as String: " + emailAddressesOfAllRecipients);
-//        Uri smsReceiverUri = Uri.parse("smsto:" + emailAddressesOfAllRecipients);
-//        Intent smsIntent = new Intent(Intent.ACTION_SENDTO,smsReceiverUri);
-//        String smsText = "MAD 2324: ToDo für [" + emailAddressesOfAllRecipients + "]\n " + viewmodel.getItem().getName() + "\n" + viewmodel.getItem().getDescription();
-//        smsIntent.putExtra("sms_body", smsText);
-//        startActivity(smsIntent);
+        String[] addresses = listOfEmailAddresses.toArray(new String[0]);
+        String emailBody = "MAD 2324: ToDo für [" + String.join(", ", addresses) + "]\n\n " + viewmodel.getItem().getName() + "\n\n" + viewmodel.getItem().getDescription();
+
+        sendEmail(addresses,subject,emailBody);
     }
 
-    public void composeEmail(String[] addresses, String subject) {
+    public void sendEmail(String[] addresses, String subject, String emailBody) {
         Intent intent = new Intent(Intent.ACTION_SENDTO);
-        intent.setData(Uri.parse("mailto:")); // only email apps should handle this
+        intent.setData(Uri.parse("mailto:"));
         intent.putExtra(Intent.EXTRA_EMAIL, addresses);
         intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
-        }
+        intent.putExtra(Intent.EXTRA_TEXT, emailBody);
+
+        Log.i(LOGGER,"send Email!");
+        startActivity(intent);
     }
 
 }
