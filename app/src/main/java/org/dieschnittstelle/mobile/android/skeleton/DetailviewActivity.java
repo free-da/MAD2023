@@ -105,7 +105,8 @@ public class DetailviewActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         ArrayList<Contacts> contacts = constructArrayListOfContactsFromContactIds();
         RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
-        recyclerView.setAdapter(new ContactListDetailViewAdapter(contacts.toArray(new Contacts[0])));
+        recyclerView.setAdapter(new ContactListDetailViewAdapter(contacts.toArray(new Contacts[0]),viewmodel.getItem()));
+
         recyclerView.addItemDecoration(itemDecoration);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -180,7 +181,7 @@ public class DetailviewActivity extends AppCompatActivity {
                 contactEmail = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
                 Log.i(LOGGER, "contactEmail: " + contactEmail);
             }
-            contacts.add(new Contacts(contactName,contactNumber,contactEmail));
+            contacts.add(new Contacts(contactName,contactNumber,contactEmail,id));
         }
         return contacts;
     }

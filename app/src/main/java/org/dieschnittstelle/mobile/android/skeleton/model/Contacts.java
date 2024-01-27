@@ -8,11 +8,22 @@ public class Contacts {
     private String phoneNumber;
     private String emailaddress;
 
-    public Contacts(String name, String phoneNumber, String emailaddress) {
+    private String contactId;
+    public String getContactId() {
+        return contactId;
+    }
+
+    public void setContactId(String contactId) {
+        this.contactId = contactId;
+    }
+
+
+    public Contacts(String name, String phoneNumber, String emailaddress, String contactId) {
 
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.emailaddress = emailaddress;
+        this.contactId = contactId;
     }
 
     public String getName() {

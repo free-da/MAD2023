@@ -41,10 +41,6 @@ public class DetailviewViewmodelImpl extends ViewModel implements IDetailviewVie
         return false;
     }
 
-    public void onContactDeleteButtonClicked() {
-        Log.i(DetailviewViewmodelImpl.class.getSimpleName(),"Button delete-contact clicked");
-
-    }
 
     @Override
     public boolean onNameFieldInputChanged() {
@@ -58,6 +54,7 @@ public class DetailviewViewmodelImpl extends ViewModel implements IDetailviewVie
     public MutableLiveData<String> getErrorStatus() {
         return this.errorStatus;
     }
+
 
     public void setItem(ToDo item) {
         this.item = item;

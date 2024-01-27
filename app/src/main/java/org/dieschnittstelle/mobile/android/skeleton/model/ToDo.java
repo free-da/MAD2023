@@ -91,4 +91,8 @@ public class ToDo implements Serializable {
         this.contactIds = contactIds;
     }
 
+    public void removeContactId(String contactId) {
+        this.contactIds.remove(contactId);
+    }
+
 }
