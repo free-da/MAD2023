@@ -50,6 +50,8 @@ public class DetailviewActivity extends AppCompatActivity {
     private ActivityDetailviewBinding binding;
     private DetailviewViewmodelImpl viewmodel;
 
+    private ContactListDetailViewAdapter contactAdapter;
+
     private static String LOGGER = DetailviewActivity.class.getSimpleName();
 
     private ActivityResultLauncher<Intent> showContactsLauncher = registerForActivityResult(
@@ -105,7 +107,8 @@ public class DetailviewActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         ArrayList<Contacts> contacts = constructArrayListOfContactsFromContactIds();
         RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
-        recyclerView.setAdapter(new ContactListDetailViewAdapter(contacts.toArray(new Contacts[0]),viewmodel.getItem()));
+        this.contactAdapter = new ContactListDetailViewAdapter(contacts,viewmodel.getItem());
+        recyclerView.setAdapter(contactAdapter);
 
         recyclerView.addItemDecoration(itemDecoration);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -203,6 +206,8 @@ public class DetailviewActivity extends AppCompatActivity {
             Log.i(LOGGER,"internalContactId: " + internalContactId);
             this.viewmodel.getItem().getContactIds().add(String.valueOf(internalContactId));
             showContactDetailsForInternalId(internalContactId);
+
+            this.contactAdapter.addItemToList(new Contacts(contactName,null,null,String.valueOf(internalContactId)));
         }
     }
 

@@ -14,11 +14,12 @@ import org.dieschnittstelle.mobile.android.skeleton.model.Contacts;
 import org.dieschnittstelle.mobile.android.skeleton.model.ToDo;
 import org.dieschnittstelle.mobile.android.skeleton.viewmodel.DetailviewViewmodelImpl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ContactListDetailViewAdapter extends RecyclerView.Adapter<ContactListDetailViewAdapter.ViewHolder> {
 
-    private Contacts[] contactArray;
+    private ArrayList<Contacts> contactArray;
     private ToDo todoItem;
 
     /**
@@ -46,7 +47,7 @@ public class ContactListDetailViewAdapter extends RecyclerView.Adapter<ContactLi
      * @param contactArray String[] containing the data to populate views to be used
      * by RecyclerView
      */
-    public ContactListDetailViewAdapter(Contacts[] contactArray, ToDo todoItem) {
+    public ContactListDetailViewAdapter(ArrayList<Contacts> contactArray, ToDo todoItem) {
         this.contactArray = contactArray;
         this.todoItem = todoItem;
     }
@@ -67,27 +68,36 @@ public class ContactListDetailViewAdapter extends RecyclerView.Adapter<ContactLi
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        viewHolder.getTextView().setText(contactArray[position].getName());
+        viewHolder.getTextView().setText(contactArray.get(position).getName());
         ImageButton button = (ImageButton) viewHolder.itemView.findViewById(R.id.delete_contact);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                String contactId = contactArray[viewHolder.getAdapterPosition()].getContactId();
-                Log.i(ContactListDetailViewAdapter.class.getSimpleName(),"before delete-contact: " + String.join(",",todoItem.getContactIds()));
-                Log.i(ContactListDetailViewAdapter.class.getSimpleName(),"ID to be deleted: " + contactId);
-                todoItem.removeContactId(contactId);
-                Log.i(ContactListDetailViewAdapter.class.getSimpleName(),"after delete-contact: " + String.join(",",todoItem.getContactIds()));
-                notifyItemRemoved(viewHolder.getAdapterPosition());
-                notifyItemRangeChanged(viewHolder.getAdapterPosition(), contactArray.length);
-                viewHolder.itemView.setVisibility(View.GONE);
+                removeItemFromList(viewHolder);
 
             }
         });
     }
 
+    private void removeItemFromList(ViewHolder viewHolder) {
+        String contactId = contactArray.get(viewHolder.getAdapterPosition()).getContactId();
+        Log.i(ContactListDetailViewAdapter.class.getSimpleName(),"before delete-contact: " + String.join(",",todoItem.getContactIds()));
+        Log.i(ContactListDetailViewAdapter.class.getSimpleName(),"ID to be deleted: " + contactId);
+        todoItem.removeContactId(contactId);
+        contactArray.remove(viewHolder.getAdapterPosition());
+        Log.i(ContactListDetailViewAdapter.class.getSimpleName(),"after delete-contact: " + String.join(",",todoItem.getContactIds()));
+        notifyItemRemoved(viewHolder.getAdapterPosition());
+        notifyItemRangeChanged(viewHolder.getAdapterPosition(), contactArray.size());
+        viewHolder.itemView.setVisibility(View.GONE);
+    }
+
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return contactArray.length;
+        return contactArray.size();
+    }
+    public void addItemToList(Contacts contact) {
+        this.contactArray.add(contact);
+        notifyDataSetChanged();
     }
 }
 
