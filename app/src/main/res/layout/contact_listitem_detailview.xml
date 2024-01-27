@@ -29,5 +29,7 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:textSize="10sp" />
+
+<!--        app:srcCompat="@drawable/delete_icon"-->
     </LinearLayout>
 </layout>

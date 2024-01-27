@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -88,7 +89,9 @@ public class DetailviewActivity extends AppCompatActivity {
                 List<String> listOfNames = contacts.stream()
                         .map(t->t.getName())
                         .collect(Collectors.toList());
+                RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
                 recyclerView.setAdapter(new ContactListDetailViewAdapter(listOfNames.toArray(new String[0])));
+                recyclerView.addItemDecoration(itemDecoration);
                 recyclerView.setLayoutManager(new LinearLayoutManager(this));
             }
         } else {
