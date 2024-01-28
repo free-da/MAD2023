@@ -92,7 +92,11 @@ public class RetrofitToDoCRUDOperationsImpl implements IToDoCRUDOperations {
     @Override
     public boolean authenticateUser(User user) {
         try {
-            return this.toDoResource.authenticateUser(user).execute().body();
+            Log.i(RetrofitToDoCRUDOperationsImpl.class.getSimpleName(),"Authenticate user: " + user.getEmail() + ", password: " + user.getPwd());
+
+            boolean authenticationResult = this.toDoResource.authenticateUser(user).execute().body();
+            Log.i(RetrofitToDoCRUDOperationsImpl.class.getSimpleName(),"Authenticate result: " + authenticationResult);
+            return authenticationResult;
         }  catch (Exception e) {
             throw new RuntimeException(e);
         }

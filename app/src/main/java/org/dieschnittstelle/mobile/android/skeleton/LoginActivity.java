@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -15,6 +17,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import org.dieschnittstelle.mobile.android.skeleton.model.RetrofitToDoCRUDOperationsImpl;
 import org.dieschnittstelle.mobile.android.skeleton.model.ToDo;
 import org.dieschnittstelle.mobile.android.skeleton.model.User;
+
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -29,6 +33,7 @@ public class LoginActivity extends Activity {
     EditText passwordField;
     FloatingActionButton login;
 
+    ProgressBar progressBar;
     boolean userAuthenticated;
 
     @Override
@@ -51,6 +56,7 @@ public class LoginActivity extends Activity {
     private void setupUI() {
         usernameField = findViewById(R.id.text_login_email);
         passwordField = findViewById(R.id.text_login_password);
+        progressBar = findViewById(R.id.login_progressBar);
         login = findViewById(R.id.login_button);
     }
     private void setupListeners() {
@@ -89,24 +95,37 @@ public class LoginActivity extends Activity {
             String passwordValue = passwordField.getText().toString();
 
             authenticateUser(usernameValue,passwordValue);
-            if(userAuthenticated) {
-                Intent i = new Intent(LoginActivity.this, OverviewActivity.class);
-                startActivity(i);
-                //we close this activity
-                this.finish();
-            } else {
-                Toast t = Toast.makeText(this, "Wrong email or password!", Toast.LENGTH_SHORT);
-                t.show();
-            }
         }
     }
 
     private void authenticateUser(String usernameValue, String passwordValue) {
-        new MADAsyncOperationRunner(this,findViewById(R.id.login_progressBar)).run(
-                () -> ((ToDoApplication)getApplication()).getCRUDOperations().authenticateUser(new User(usernameValue, passwordValue)),
-                authenticated -> {
-                    this.userAuthenticated = true;
-                });
+        if (progressBar != null) {
+            progressBar.setVisibility((View.VISIBLE));
+        }
+        new Thread(() -> {
+            try {
+                    TimeUnit.SECONDS.sleep(2);
+                } catch (Exception e) {
+                    Log.i(LoginActivity.class.getSimpleName(),"Authentication-Sleep made some problems");
+                }
+            if (((ToDoApplication)getApplication()).getCRUDOperations().authenticateUser(new User(usernameValue, passwordValue))) {
+                this.userAuthenticated = true;
+            }
+            this.runOnUiThread(() -> {
+                if (progressBar != null) {
+                    progressBar.setVisibility(View.GONE);
+                }
+                if (userAuthenticated) {
+                    Log.i(LoginActivity.class.getSimpleName(), "User logged in successfully. Status: " + userAuthenticated);
+                    Intent i = new Intent(LoginActivity.this, OverviewActivity.class);
+                    startActivity(i);
+                    this.finish();
+                } else {
+                    Toast t = Toast.makeText(this, "Wrong email or password!", Toast.LENGTH_SHORT);
+                    t.show();
+                }
+             });
+        }).start();
     }
 
     boolean isEmail(EditText text) {
