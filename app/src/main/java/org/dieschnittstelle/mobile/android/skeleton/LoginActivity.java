@@ -10,11 +10,23 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import org.dieschnittstelle.mobile.android.skeleton.model.RetrofitToDoCRUDOperationsImpl;
+import org.dieschnittstelle.mobile.android.skeleton.model.ToDo;
+
+import retrofit2.Call;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Body;
+import retrofit2.http.PUT;
+import retrofit2.http.Path;
+
 public class LoginActivity extends Activity {
     // https://www.codebrainer.com/blog/registration-form-in-android-check-email-is-valid-is-empty
     EditText usernameField;
     EditText passwordField;
-    Button login;
+    FloatingActionButton login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +35,13 @@ public class LoginActivity extends Activity {
 
         setupUI();
         setupListeners();
+
+        Retrofit webapiBase = new Retrofit.Builder()
+                .baseUrl("http://192.168.2.225:8080")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        webapiBase.create(RetrofitToDoCRUDOperationsImpl.ToDoResource.class);
     }
     private void setupUI() {
         usernameField = findViewById(R.id.text_login_email);
@@ -37,6 +56,7 @@ public class LoginActivity extends Activity {
             }
         });
     }
+
     void checkUsername() {
         boolean isValid = true;
         if (isEmpty(usernameField)) {
@@ -59,13 +79,12 @@ public class LoginActivity extends Activity {
             }
         }
 
-        //check email and password
-        //IMPORTANT: here should be call to backend or safer function for local check; For example simple check is cool
-        //For example simple check is cool
         if (isValid) {
             String usernameValue = usernameField.getText().toString();
             String passwordValue = passwordField.getText().toString();
-            if (usernameValue.equals("test@test.com") && passwordValue.equals("password1234")) {
+
+
+            /*if (usernameValue.equals("test@test.com") && passwordValue.equals("password1234")) {
                 //everything checked we open new activity
                 Intent i = new Intent(LoginActivity.this, OverviewActivity.class);
                 startActivity(i);
@@ -74,7 +93,7 @@ public class LoginActivity extends Activity {
             } else {
                 Toast t = Toast.makeText(this, "Wrong email or password!", Toast.LENGTH_SHORT);
                 t.show();
-            }
+            }*/
         }
     }
     boolean isEmail(EditText text) {
