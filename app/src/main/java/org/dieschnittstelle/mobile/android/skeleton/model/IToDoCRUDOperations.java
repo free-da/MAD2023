@@ -14,4 +14,8 @@ public interface IToDoCRUDOperations {
 
     public boolean deleteToDo(long id);
 
+    public boolean authenticateUser(User user);
+
+    public boolean deleteAllTodos();
+
 }

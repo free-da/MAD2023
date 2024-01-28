@@ -14,6 +14,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.dieschnittstelle.mobile.android.skeleton.model.RetrofitToDoCRUDOperationsImpl;
 import org.dieschnittstelle.mobile.android.skeleton.model.ToDo;
+import org.dieschnittstelle.mobile.android.skeleton.model.User;
 
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -28,10 +29,14 @@ public class LoginActivity extends Activity {
     EditText passwordField;
     FloatingActionButton login;
 
+    boolean userAuthenticated;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        this.userAuthenticated = false;
 
         setupUI();
         setupListeners();
@@ -83,9 +88,8 @@ public class LoginActivity extends Activity {
             String usernameValue = usernameField.getText().toString();
             String passwordValue = passwordField.getText().toString();
 
-
-            /*if (usernameValue.equals("test@test.com") && passwordValue.equals("password1234")) {
-                //everything checked we open new activity
+            authenticateUser(usernameValue,passwordValue);
+            if(userAuthenticated) {
                 Intent i = new Intent(LoginActivity.this, OverviewActivity.class);
                 startActivity(i);
                 //we close this activity
@@ -93,9 +97,18 @@ public class LoginActivity extends Activity {
             } else {
                 Toast t = Toast.makeText(this, "Wrong email or password!", Toast.LENGTH_SHORT);
                 t.show();
-            }*/
+            }
         }
     }
+
+    private void authenticateUser(String usernameValue, String passwordValue) {
+        new MADAsyncOperationRunner(this,findViewById(R.id.login_progressBar)).run(
+                () -> ((ToDoApplication)getApplication()).getCRUDOperations().authenticateUser(new User(usernameValue, passwordValue)),
+                authenticated -> {
+                    this.userAuthenticated = true;
+                });
+    }
+
     boolean isEmail(EditText text) {
         CharSequence email = text.getText().toString();
         return (!TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches());

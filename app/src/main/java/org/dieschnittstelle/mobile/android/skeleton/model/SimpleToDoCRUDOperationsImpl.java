@@ -46,4 +46,14 @@ public class SimpleToDoCRUDOperationsImpl implements IToDoCRUDOperations{
     public boolean deleteToDo(long id) {
         return false;
     }
+
+    @Override
+    public boolean authenticateUser(User user) {
+        return false;
+    }
+
+    @Override
+    public boolean deleteAllTodos() {
+        return false;
+    }
 }

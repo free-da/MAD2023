@@ -47,4 +47,14 @@ public class SyncedToDoCRUDOperationsImpl implements IToDoCRUDOperations {
     public boolean deleteToDo(long id) {
         return false;
     }
+
+    @Override
+    public boolean authenticateUser(User user) {
+        return remoteCRUD.authenticateUser(user);
+    }
+
+    @Override
+    public boolean deleteAllTodos() {
+        return false;
+    }
 }

@@ -71,4 +71,14 @@ public class RoomToDoCRUDOperationsImpl implements IToDoCRUDOperations{
         db.getDao().delete(readToDo(id));
         return true;
     }
+
+    @Override
+    public boolean authenticateUser(User user) {
+        return false;
+    }
+
+    @Override
+    public boolean deleteAllTodos() {
+        return false;
+    }
 }

@@ -207,11 +207,11 @@ public class OverviewActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.sortItems) {
             this.sortItems();
             return true;
-//        } else if (item.getItemId() == R.id.deleAllRemoteItems) {
+//        } else if (item.getItemId() == R.id.deleteAllRemoteItems) {
 //            if (this.crudOperations instanceof SyncedToDoCRUDOperationsImpl) {
-//                ((SyncedToDoCRUDOperationsImpl)this.crudOperations).deleteAllTemoteItems();
+//                ((SyncedToDoCRUDOperationsImpl)this.crudOperations).deleteAllTodos();
 //            } else {
-//                Toast.makeText(this,"deleteAllRemote is not available", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this,"deleteAllTodos is not available", Toast.LENGTH_SHORT).show();
 //            }
         } else {
             return super.onOptionsItemSelected(item);
