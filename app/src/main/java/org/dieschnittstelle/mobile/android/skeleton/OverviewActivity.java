@@ -226,6 +226,7 @@ public class OverviewActivity extends AppCompatActivity {
                             () -> crudOperations.readAllToDos(),
                             // consumer (= the reaction to the operation result)
                             items -> {
+                                listViewAdapter.clear();
                                 overviewViewmodel.getItems().addAll(items);
                                 this.sortItems();
                                 Toast.makeText(this,"Synced " + overviewViewmodel.getItems().size() + " items.", Toast.LENGTH_SHORT).show();
