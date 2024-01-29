@@ -145,9 +145,11 @@ public class OverviewActivity extends AppCompatActivity {
         );
     }
 
-    public void onDeleteItemButtonClicked(long id) {
-        this.operationRunner.run(() -> crudOperations.deleteToDo(id),
+    public void onDeleteItemButtonClicked(ToDo item) {
+        this.operationRunner.run(() -> crudOperations.deleteToDo(item.getId()),
                 changed -> {
+
+                    overviewViewmodel.getItems().remove(item);
                     showMessage("Item deleted");
                     this.sortItems();
                 }

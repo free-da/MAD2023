@@ -31,7 +31,8 @@
             android:paddingRight="16dp"
             android:src="@drawable/delete_icon"
             android:contentDescription="Delete contact from ToDo"
-            android:textSize="10sp"/>
+            android:textSize="10sp"
+            />
 
     </LinearLayout>
 </layout>

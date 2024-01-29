@@ -11,7 +11,9 @@
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:descendantFocusability="blocksDescendants"
+            >
             <CheckBox
                 android:layout_gravity="center_vertical"
                 android:focusable="false"
@@ -25,8 +27,22 @@
                 android:text="@{item.name}"
                 android:padding="10dp"
                 android:textSize="30dp"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
-
+            <ImageButton
+                android:id="@+id/delete_todo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:src="@drawable/delete_icon"
+                android:onClick="@{() -> controller.onDeleteItemButtonClicked(item)}"
+                android:contentDescription="Delete ToDo"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:textSize="10sp"
+                android:layout_gravity="center_vertical|right"
+                android:layout_marginRight="10dp"
+                />
         </LinearLayout>
     </layout>
