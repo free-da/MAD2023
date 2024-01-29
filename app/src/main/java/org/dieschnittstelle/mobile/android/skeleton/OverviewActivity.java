@@ -221,13 +221,17 @@ public class OverviewActivity extends AppCompatActivity {
             return true;
         } else if (item.getItemId() == R.id.runSync) {
             if (this.crudOperations instanceof SyncedToDoCRUDOperationsImpl) {
-                this.operationRunner.run(() -> crudOperations.readAllToDos(),
-                        synced -> {
-                            listViewAdapter.addAll(overviewViewmodel.getItems());
-                            listViewAdapter.notifyDataSetChanged();
-                            showMessage("Sync completed, added " + overviewViewmodel.getItems().size() + " items.");
-                        }
-                );
+                    operationRunner.run(
+                            // supplier (= the operation)
+                            () -> crudOperations.readAllToDos(),
+                            // consumer (= the reaction to the operation result)
+                            items -> {
+                                overviewViewmodel.getItems().addAll(items);
+                                this.sortItems();
+                                Toast.makeText(this,"Synced " + overviewViewmodel.getItems().size() + " items.", Toast.LENGTH_SHORT).show();
+                            }
+                    );
+
             } else {
                 Toast.makeText(this,"RunSync is not available", Toast.LENGTH_SHORT).show();
             }

@@ -16,7 +16,7 @@ public class SyncedToDoCRUDOperationsImpl implements IToDoCRUDOperations {
     }
     @Override
     public ToDo createToDo(ToDo item) {
-        item = localCRUD.createToDo(item);
+        localCRUD.createToDo(item);
         remoteCRUD.createToDo(item);
         Log.i(SyncedToDoCRUDOperationsImpl.class.getSimpleName(),"created new item: " + item.getName());
         return item;
@@ -24,13 +24,14 @@ public class SyncedToDoCRUDOperationsImpl implements IToDoCRUDOperations {
 
     @Override
     public List<ToDo> readAllToDos() {
-        List<ToDo> localTodos = localCRUD.readAllToDos();
-        if (!localTodos.isEmpty()) {
-            syncAllLocalToRemote();
-        } else {
-            syncAllRemoteToLocal();
+        List<ToDo> allTodos = (localCRUD.readAllToDos().isEmpty()) ? remoteCRUD.readAllToDos() : localCRUD.readAllToDos();
+        Log.i(SyncedToDoCRUDOperationsImpl.class.getSimpleName(),"allTodos: " + allTodos.size());
+        localCRUD.deleteAllTodos();
+        remoteCRUD.deleteAllTodos();
+        for (ToDo todo : allTodos) {
+            createToDo(todo);
         }
-        return remoteCRUD.readAllToDos();
+        return localCRUD.readAllToDos();
     }
 
     private void syncAllLocalToRemote() {
