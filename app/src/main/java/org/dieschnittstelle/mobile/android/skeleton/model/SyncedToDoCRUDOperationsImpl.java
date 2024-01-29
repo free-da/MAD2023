@@ -24,9 +24,6 @@ public class SyncedToDoCRUDOperationsImpl implements IToDoCRUDOperations {
 
     @Override
     public List<ToDo> readAllToDos() {
-
-        Log.i(SyncedToDoCRUDOperationsImpl.class.getSimpleName(),"read all Todos");
-
         List<ToDo> localTodos = localCRUD.readAllToDos();
         if (!localTodos.isEmpty()) {
             syncAllLocalToRemote();
