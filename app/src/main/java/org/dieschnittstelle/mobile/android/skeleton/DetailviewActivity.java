@@ -210,6 +210,9 @@ public class DetailviewActivity extends AppCompatActivity {
             this.viewmodel.getItem().getContactIds().add(String.valueOf(internalContactId));
             showContactDetailsForInternalId(internalContactId);
 
+            if (this.contactAdapter == null) {
+                this.contactAdapter = new ContactListDetailViewAdapter(new ArrayList<Contacts>(),viewmodel.getItem());
+            }
             this.contactAdapter.addItemToList(new Contacts(contactName,null,null,String.valueOf(internalContactId)));
         }
     }
