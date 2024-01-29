@@ -34,21 +34,6 @@ public class SyncedToDoCRUDOperationsImpl implements IToDoCRUDOperations {
         return localCRUD.readAllToDos();
     }
 
-    private void syncAllLocalToRemote() {
-        remoteCRUD.deleteAllTodos();
-        List<ToDo> localTodos = localCRUD.readAllToDos();
-        for (ToDo todo : localTodos) {
-            remoteCRUD.createToDo(todo);
-        }
-    }
-
-    private void syncAllRemoteToLocal() {
-        List<ToDo> remoteTodos = remoteCRUD.readAllToDos();
-        for (ToDo todo : remoteTodos) {
-            localCRUD.createToDo(todo);
-        }
-    }
-
     @Override
     public ToDo readToDo(long id) {
         return localCRUD.readToDo(id);
@@ -69,7 +54,9 @@ public class SyncedToDoCRUDOperationsImpl implements IToDoCRUDOperations {
 
     @Override
     public boolean deleteToDo(long id) {
-        return false;
+        localCRUD.deleteToDo(id);
+        remoteCRUD.deleteToDo(id);
+        return true;
     }
 
     @Override

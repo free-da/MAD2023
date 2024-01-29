@@ -1,5 +1,7 @@
 package org.dieschnittstelle.mobile.android.skeleton.model;
 
+import android.text.TextUtils;
+
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverter;
@@ -77,7 +79,7 @@ public class ToDo implements Serializable {
     }
 
     public String toString() {
-        return "{Todo " + this.id + ", name: " + this.name + ", description: " + this.description + ", checked: " + this.done + "}";
+        return "{Todo " + this.id + ", name: " + this.name + ", description: " + this.description + ", checked: " + this.done + ", number of contacts: " + this.contactIds.size() + "}";
     }
 
     public List<String> getContactIds() {

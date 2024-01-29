@@ -12,19 +12,15 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -32,18 +28,11 @@ import com.google.android.material.snackbar.Snackbar;
 
 import org.dieschnittstelle.mobile.android.skeleton.databinding.ActivityOverviewListitemBinding;
 import org.dieschnittstelle.mobile.android.skeleton.model.IToDoCRUDOperations;
-import org.dieschnittstelle.mobile.android.skeleton.model.RetrofitToDoCRUDOperationsImpl;
-import org.dieschnittstelle.mobile.android.skeleton.model.RoomToDoCRUDOperationsImpl;
-import org.dieschnittstelle.mobile.android.skeleton.model.SimpleToDoCRUDOperationsImpl;
 import org.dieschnittstelle.mobile.android.skeleton.model.SyncedToDoCRUDOperationsImpl;
 import org.dieschnittstelle.mobile.android.skeleton.model.ToDo;
-import org.dieschnittstelle.mobile.android.skeleton.model.User;
 import org.dieschnittstelle.mobile.android.skeleton.viewmodel.OverviewViewmodelImpl;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class OverviewActivity extends AppCompatActivity {
 
@@ -156,6 +145,14 @@ public class OverviewActivity extends AppCompatActivity {
         );
     }
 
+    public void onDeleteItemButtonClicked(long id) {
+        this.operationRunner.run(() -> crudOperations.deleteToDo(id),
+                changed -> {
+                    showMessage("Item deleted");
+                    this.sortItems();
+                }
+        );
+    }
     public void onListitemSelected(ToDo listitem) {
         Intent callDetailViewIntent = new Intent(this, DetailviewActivity.class);
         callDetailViewIntent.putExtra(DetailviewActivity.ARG_ITEM,listitem);
@@ -206,40 +203,48 @@ public class OverviewActivity extends AppCompatActivity {
             this.sortItems();
             return true;
         } else if (item.getItemId() == R.id.deleteAll) {
-            if (this.crudOperations instanceof SyncedToDoCRUDOperationsImpl) {
-                this.operationRunner.run(() -> crudOperations.deleteAllTodos(),
-                        deleted -> {
-                            int numberOfDeletedItems = overviewViewmodel.getItems().size();
-                            listViewAdapter.clear();
-                            listViewAdapter.notifyDataSetChanged();
-                            showMessage("Deleted " + numberOfDeletedItems + " Todos.");
-                        }
-                );
-            } else {
-                Toast.makeText(this,"deleteAllRemote is not available", Toast.LENGTH_SHORT).show();
-            }
-            return true;
+            return performDeleteAllOperation();
         } else if (item.getItemId() == R.id.runSync) {
-            if (this.crudOperations instanceof SyncedToDoCRUDOperationsImpl) {
-                    operationRunner.run(
-                            // supplier (= the operation)
-                            () -> crudOperations.readAllToDos(),
-                            // consumer (= the reaction to the operation result)
-                            items -> {
-                                listViewAdapter.clear();
-                                overviewViewmodel.getItems().addAll(items);
-                                this.sortItems();
-                                Toast.makeText(this,"Synced " + overviewViewmodel.getItems().size() + " items.", Toast.LENGTH_SHORT).show();
-                            }
-                    );
-
-            } else {
-                Toast.makeText(this,"RunSync is not available", Toast.LENGTH_SHORT).show();
-            }
-            return true;
+            return performSyncOperation();
         } else {
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    private boolean performSyncOperation() {
+        if (this.crudOperations instanceof SyncedToDoCRUDOperationsImpl) {
+                operationRunner.run(
+                        // supplier (= the operation)
+                        () -> crudOperations.readAllToDos(),
+                        // consumer (= the reaction to the operation result)
+                        items -> {
+                            listViewAdapter.clear();
+                            overviewViewmodel.getItems().addAll(items);
+                            this.sortItems();
+                            Toast.makeText(this,"Synced " + overviewViewmodel.getItems().size() + " items.", Toast.LENGTH_SHORT).show();
+                        }
+                );
+
+        } else {
+            Toast.makeText(this,"RunSync is not available", Toast.LENGTH_SHORT).show();
+        }
+        return true;
+    }
+
+    private boolean performDeleteAllOperation() {
+        if (this.crudOperations instanceof SyncedToDoCRUDOperationsImpl) {
+            this.operationRunner.run(() -> crudOperations.deleteAllTodos(),
+                    deleted -> {
+                        int numberOfDeletedItems = overviewViewmodel.getItems().size();
+                        listViewAdapter.clear();
+                        listViewAdapter.notifyDataSetChanged();
+                        showMessage("Deleted " + numberOfDeletedItems + " Todos.");
+                    }
+            );
+        } else {
+            Toast.makeText(this,"deleteAllRemote is not available", Toast.LENGTH_SHORT).show();
+        }
+        return true;
     }
 
     public void sortItems() {

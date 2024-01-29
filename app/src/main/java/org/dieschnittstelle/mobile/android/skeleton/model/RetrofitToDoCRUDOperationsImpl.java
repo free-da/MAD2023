@@ -33,6 +33,9 @@ public class RetrofitToDoCRUDOperationsImpl implements IToDoCRUDOperations {
         @PUT("/api/users/auth")
         public Call<Boolean> authenticateUser(@Body User user);
 
+        @DELETE("/api/todos/{todoId}")
+        public Call<Boolean> deleteTodo(@Path("todoId") long id);
+
         @DELETE("/api/todos")
         public Call<Boolean> deleteAll();
 
@@ -90,7 +93,13 @@ public class RetrofitToDoCRUDOperationsImpl implements IToDoCRUDOperations {
 
     @Override
     public boolean deleteToDo(long id) {
-        return false;
+        try {
+            Log.i(RetrofitToDoCRUDOperationsImpl.class.getSimpleName(), "item deleted: " + id);
+            this.toDoResource.deleteTodo(id).execute().body();
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

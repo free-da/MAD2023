@@ -151,10 +151,12 @@ public class DetailviewActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("Range")
     public ArrayList<Contacts> constructArrayListOfContactsFromContactIds() {
 
         String[] contactIds = viewmodel.getItem().getContactIds().toArray(new String[0]);
         ArrayList<Contacts> contacts = new ArrayList<>();
+        Log.i(LOGGER,"contacts: " + String.join(", ",contactIds));
         for (String id : contactIds) {
             Cursor cursor = getContentResolver().query(
                     ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
@@ -163,8 +165,8 @@ public class DetailviewActivity extends AppCompatActivity {
                     new String[]{String.valueOf(id)},
                     null,
                     null);
-            Log.i(LOGGER,"contactID-String-length: " + contactIds.length);
-            Log.i(LOGGER,"contactID-String: " + TextUtils.join(", ", contactIds));
+            Log.i(LOGGER, "contactID-String-length: " + contactIds.length);
+            Log.i(LOGGER, "contactID-String: " + TextUtils.join(", ", contactIds));
             String contactName = "";
             String contactNumber = "";
             String contactEmail = "";
@@ -184,8 +186,9 @@ public class DetailviewActivity extends AppCompatActivity {
                 contactEmail = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
                 Log.i(LOGGER, "contactEmail: " + contactEmail);
             }
-            contacts.add(new Contacts(contactName,contactNumber,contactEmail,id));
+            contacts.add(new Contacts(contactName, contactNumber, contactEmail, id));
         }
+
         return contacts;
     }
 

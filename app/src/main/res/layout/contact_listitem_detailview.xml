@@ -6,9 +6,6 @@
         <variable
             name="contact"
             type="org.dieschnittstelle.mobile.android.skeleton.model.Contacts" />
-        <variable
-            name="viewmodel"
-            type="org.dieschnittstelle.mobile.android.skeleton.viewmodel.DetailviewViewmodelImpl" />
     </data>
 
     <LinearLayout

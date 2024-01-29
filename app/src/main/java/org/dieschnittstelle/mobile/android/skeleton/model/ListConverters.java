@@ -13,8 +13,8 @@ public class ListConverters {
 
     @TypeConverter
     public static String makeStringfromListOfStrings(List<String> stringList) {
-        if (stringList == null) {
-            return "";
+        if (stringList.isEmpty()) {
+            return null;
         }
         return stringList.stream().distinct().collect(Collectors.joining(SEPARATOR));
     }
