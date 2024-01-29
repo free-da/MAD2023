@@ -97,7 +97,8 @@ public class ContactListDetailViewAdapter extends RecyclerView.Adapter<ContactLi
     }
     public void addItemToList(Contacts contact) {
         this.contactArray.add(contact);
-        notifyDataSetChanged();
+        notifyItemInserted(contactArray.indexOf(contact));
+        notifyItemRangeChanged(contactArray.indexOf(contact), contactArray.size());
     }
 }
 
