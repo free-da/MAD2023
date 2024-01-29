@@ -27,8 +27,11 @@
                 android:text="@{item.name}"
                 android:padding="10dp"
                 android:textSize="30dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                />
             <ImageButton
                 android:id="@+id/delete_todo"
                 android:layout_width="wrap_content"
@@ -41,8 +44,6 @@
                 android:focusable="false"
                 android:focusableInTouchMode="false"
                 android:textSize="10sp"
-                android:layout_gravity="center_vertical|right"
-                android:layout_marginRight="10dp"
-                />
+                android:layout_gravity="center_vertical|end" />
         </LinearLayout>
     </layout>
