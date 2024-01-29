@@ -56,6 +56,11 @@ public class LoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (((ToDoApplication)getApplication()).isOfflineMode()) {
+            startActivity(new Intent(this,OverviewActivity.class));
+        }
+
         setContentView(R.layout.activity_login);
 
         this.userAuthenticated = false;

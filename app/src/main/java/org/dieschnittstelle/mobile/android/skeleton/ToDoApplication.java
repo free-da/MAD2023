@@ -1,10 +1,10 @@
 package org.dieschnittstelle.mobile.android.skeleton;
 
 import android.app.Application;
+import android.content.Intent;
 import android.widget.Toast;
 
 import org.dieschnittstelle.mobile.android.skeleton.model.IToDoCRUDOperations;
-import org.dieschnittstelle.mobile.android.skeleton.model.RetrofitToDoCRUDOperationsImpl;
 import org.dieschnittstelle.mobile.android.skeleton.model.RoomToDoCRUDOperationsImpl;
 import org.dieschnittstelle.mobile.android.skeleton.model.SyncedToDoCRUDOperationsImpl;
 
@@ -33,33 +33,33 @@ public class ToDoApplication extends Application {
             Toast.makeText(this,"Some unexpected error occurred. Using CRUD Impl: " + crudOperations.getClass().getSimpleName(), Toast.LENGTH_SHORT).show();
         }
     }
-        public IToDoCRUDOperations getCRUDOperations() {
+    public IToDoCRUDOperations getCRUDOperations() {
             return crudOperations;
         }
 
-        public CompletableFuture<Boolean> checkConnectivity() {
-            CompletableFuture<Boolean> future = new CompletableFuture<>();
-            new Thread(() -> {
-                try {
-                    HttpURLConnection conn = (HttpURLConnection) new URL("http://192.168.2.225:8080/api/todos").openConnection();
-                    conn.setConnectTimeout(500);
-                    conn.setReadTimeout(500);
-                    conn.setDoInput(true);
-                    conn.connect();
-                    conn.getInputStream();
-                    future.complete(true);
-                } catch (Exception e) {
-                    future.complete(false);
-                }
-            }).start();
-            return future;
+    public CompletableFuture<Boolean> checkConnectivity() {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        new Thread(() -> {
+            try {
+                HttpURLConnection conn = (HttpURLConnection) new URL("http://192.168.2.225:8080/api/todos").openConnection();
+                conn.setConnectTimeout(500);
+                conn.setReadTimeout(500);
+                conn.setDoInput(true);
+                conn.connect();
+                conn.getInputStream();
+                future.complete(true);
+            } catch (Exception e) {
+                future.complete(false);
+            }
+        }).start();
+        return future;
 
-        }
-
-        public boolean isOfflineMode() {
-            return offlineMode;
-        }
     }
+
+    public boolean isOfflineMode() {
+        return offlineMode;
+    }
+}
 
 
 
