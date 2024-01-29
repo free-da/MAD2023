@@ -21,7 +21,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@{contact.name}"
-            android:gravity="center_vertical"/>
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"/>
 
         <ImageButton
             android:id="@+id/delete_contact"
@@ -32,6 +33,7 @@
             android:src="@drawable/delete_icon"
             android:contentDescription="Delete contact from ToDo"
             android:textSize="10sp"
+            android:gravity="center_vertical"
             />
 
     </LinearLayout>
