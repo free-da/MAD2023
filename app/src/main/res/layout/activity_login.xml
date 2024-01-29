@@ -2,6 +2,11 @@
 <!-- https://gist.github.com/josebleles/a06fe3a4c8939df1428a85b5ee663fea -->
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="login"
+            type="org.dieschnittstelle.mobile.android.skeleton.LoginActivity" />
+    </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -53,14 +58,12 @@
                             android:id="@+id/text_login_email"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:imeOptions="actionNext"
                             android:hint="E-Mail"/>
 
                         <EditText
                             android:id="@+id/text_login_password"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:imeOptions="actionNext"
                             android:inputType="textPassword"
                             android:hint="Passwort"/>
 

@@ -12,4 +12,5 @@ public interface IOverviewViewmodel {
     public Comparator<ToDo> getCurrentSortMode();
 
     public void switchSortMode();
+
 }

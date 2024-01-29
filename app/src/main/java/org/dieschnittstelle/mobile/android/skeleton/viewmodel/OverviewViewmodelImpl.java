@@ -32,4 +32,5 @@ public class OverviewViewmodelImpl extends ViewModel implements IOverviewViewmod
     public void switchSortMode() {
         //TODO: implement switching
     }
+
 }

@@ -1,6 +1,7 @@
 package org.dieschnittstelle.mobile.android.skeleton.model;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.List;
 
@@ -17,12 +18,37 @@ public class SyncedToDoCRUDOperationsImpl implements IToDoCRUDOperations {
     public ToDo createToDo(ToDo item) {
         item = localCRUD.createToDo(item);
         remoteCRUD.createToDo(item);
+        Log.i(SyncedToDoCRUDOperationsImpl.class.getSimpleName(),"created new item: " + item.getName());
         return item;
     }
 
     @Override
     public List<ToDo> readAllToDos() {
-        return localCRUD.readAllToDos();
+
+        Log.i(SyncedToDoCRUDOperationsImpl.class.getSimpleName(),"read all Todos");
+
+        List<ToDo> localTodos = localCRUD.readAllToDos();
+        if (!localTodos.isEmpty()) {
+            syncAllLocalToRemote();
+        } else {
+            syncAllRemoteToLocal();
+        }
+        return remoteCRUD.readAllToDos();
+    }
+
+    private void syncAllLocalToRemote() {
+        remoteCRUD.deleteAllTodos();
+        List<ToDo> localTodos = localCRUD.readAllToDos();
+        for (ToDo todo : localTodos) {
+            remoteCRUD.createToDo(todo);
+        }
+    }
+
+    private void syncAllRemoteToLocal() {
+        List<ToDo> remoteTodos = remoteCRUD.readAllToDos();
+        for (ToDo todo : remoteTodos) {
+            localCRUD.createToDo(todo);
+        }
     }
 
     @Override
@@ -55,6 +81,15 @@ public class SyncedToDoCRUDOperationsImpl implements IToDoCRUDOperations {
 
     @Override
     public boolean deleteAllTodos() {
-        return false;
+        deleteAllLocalTodos();
+        deleteAllRemoteTodos();
+        return true;
+    }
+    public boolean deleteAllLocalTodos() {
+        return localCRUD.deleteAllTodos();
+    }
+
+    public boolean deleteAllRemoteTodos() {
+        return remoteCRUD.deleteAllTodos();
     }
 }

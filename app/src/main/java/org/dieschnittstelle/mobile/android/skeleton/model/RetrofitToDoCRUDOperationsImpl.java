@@ -8,6 +8,7 @@ import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -31,6 +32,9 @@ public class RetrofitToDoCRUDOperationsImpl implements IToDoCRUDOperations {
 
         @PUT("/api/users/auth")
         public Call<Boolean> authenticateUser(@Body User user);
+
+        @DELETE("/api/todos")
+        public Call<Boolean> deleteAll();
 
     }
 
@@ -104,6 +108,12 @@ public class RetrofitToDoCRUDOperationsImpl implements IToDoCRUDOperations {
 
     @Override
     public boolean deleteAllTodos() {
-        return false;
+        try {
+            boolean deleteResult = Boolean.TRUE.equals(this.toDoResource.deleteAll().execute().body());
+            Log.i(RetrofitToDoCRUDOperationsImpl.class.getSimpleName(),"Delete result: " + deleteResult);
+            return deleteResult;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

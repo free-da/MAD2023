@@ -26,10 +26,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends Activity {
     // https://www.codebrainer.com/blog/registration-form-in-android-check-email-is-valid-is-empty
-    EditText usernameField;
+    EditText emailField;
     EditText passwordField;
     FloatingActionButton loginButton;
-
     ProgressBar progressBar;
     boolean userAuthenticated;
 
@@ -42,17 +41,23 @@ public class LoginActivity extends Activity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+            CharSequence passwordError = passwordField.getError();
+            CharSequence emailError = emailField.getError();
+            if (passwordError != null && passwordError.length() > 0) {
+                passwordField.setError(null);
+            }
+            if (emailError != null && emailError.length() > 0) {
+                emailField.setError(null);
+            }
         }
 
         @Override
         public void afterTextChanged(Editable s) {
-            String usernameInput = usernameField.getText().toString().trim();
-            String passwordInput = passwordField.getText().toString().trim();
-
-            loginButton.setEnabled(checkValidtyOfEmailAddress() && checkValidityOfPassword());
+            loginButton.setEnabled(checkValidityOfEmailAddress() && checkValidityOfPassword());
         }
     };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,36 +81,36 @@ public class LoginActivity extends Activity {
         webapiBase.create(RetrofitToDoCRUDOperationsImpl.ToDoResource.class);
     }
     private void setupUI() {
-        usernameField = findViewById(R.id.text_login_email);
+        emailField = findViewById(R.id.text_login_email);
         passwordField = findViewById(R.id.text_login_password);
         progressBar = findViewById(R.id.login_progressBar);
         loginButton = findViewById(R.id.login_button);
 
-        usernameField.addTextChangedListener(loginTextWatcher);
+        emailField.addTextChangedListener(loginTextWatcher);
         passwordField.addTextChangedListener(loginTextWatcher);
     }
     private void setupListeners() {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if (checkValidtyOfEmailAddress() && checkValidityOfPassword()) {
-                    String usernameValue = usernameField.getText().toString();
+                if (checkValidityOfEmailAddress() && checkValidityOfPassword()) {
+                    String usernameValue = emailField.getText().toString();
                     String passwordValue = passwordField.getText().toString();
 
                     authenticateUser(usernameValue,passwordValue);
- //               }
+                }
             }
         });
     }
+    
+    private boolean checkValidityOfEmailAddress() {
 
-    private boolean checkValidtyOfEmailAddress() {
-
-        if (isEmpty(usernameField)) {
-            usernameField.setError("You must enter username to login!");
+        if (isEmpty(emailField)) {
+            emailField.setError("You must enter username to login!");
             return false;
         } else {
-            if (!isEmail(usernameField)) {
-                usernameField.setError("Enter valid email!");
+            if (!isEmail(emailField)) {
+                emailField.setError("Enter valid email!");
                 return false;
             }
         }
@@ -154,8 +159,7 @@ public class LoginActivity extends Activity {
                     startActivity(i);
                     this.finish();
                 } else {
-                    Toast t = Toast.makeText(this, "Wrong email or password!", Toast.LENGTH_SHORT);
-                    t.show();
+                    emailField.setError("Wrong email or password!");
                 }
              });
         }).start();

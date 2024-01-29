@@ -32,6 +32,9 @@ public class RoomToDoCRUDOperationsImpl implements IToDoCRUDOperations{
 
         @Delete
         public void delete(ToDo item);
+
+        @Query("delete from todo")
+        public void deleteAllTodos();
     }
 
     @Database(entities = {ToDo.class}, version = 1)
@@ -79,6 +82,7 @@ public class RoomToDoCRUDOperationsImpl implements IToDoCRUDOperations{
 
     @Override
     public boolean deleteAllTodos() {
-        return false;
+        db.getDao().deleteAllTodos();
+        return true;
     }
 }

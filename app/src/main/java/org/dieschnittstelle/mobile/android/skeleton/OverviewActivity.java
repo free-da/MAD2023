@@ -37,11 +37,13 @@ import org.dieschnittstelle.mobile.android.skeleton.model.RoomToDoCRUDOperations
 import org.dieschnittstelle.mobile.android.skeleton.model.SimpleToDoCRUDOperationsImpl;
 import org.dieschnittstelle.mobile.android.skeleton.model.SyncedToDoCRUDOperationsImpl;
 import org.dieschnittstelle.mobile.android.skeleton.model.ToDo;
+import org.dieschnittstelle.mobile.android.skeleton.model.User;
 import org.dieschnittstelle.mobile.android.skeleton.viewmodel.OverviewViewmodelImpl;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class OverviewActivity extends AppCompatActivity {
 
@@ -203,12 +205,33 @@ public class OverviewActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.sortItems) {
             this.sortItems();
             return true;
-//        } else if (item.getItemId() == R.id.deleteAllRemoteItems) {
-//            if (this.crudOperations instanceof SyncedToDoCRUDOperationsImpl) {
-//                ((SyncedToDoCRUDOperationsImpl)this.crudOperations).deleteAllTodos();
-//            } else {
-//                Toast.makeText(this,"deleteAllTodos is not available", Toast.LENGTH_SHORT).show();
-//            }
+        } else if (item.getItemId() == R.id.deleteAll) {
+            if (this.crudOperations instanceof SyncedToDoCRUDOperationsImpl) {
+                this.operationRunner.run(() -> crudOperations.deleteAllTodos(),
+                        deleted -> {
+                            int numberOfDeletedItems = overviewViewmodel.getItems().size();
+                            listViewAdapter.clear();
+                            listViewAdapter.notifyDataSetChanged();
+                            showMessage("Deleted " + numberOfDeletedItems + " Todos.");
+                        }
+                );
+            } else {
+                Toast.makeText(this,"deleteAllRemote is not available", Toast.LENGTH_SHORT).show();
+            }
+            return true;
+        } else if (item.getItemId() == R.id.runSync) {
+            if (this.crudOperations instanceof SyncedToDoCRUDOperationsImpl) {
+                this.operationRunner.run(() -> crudOperations.readAllToDos(),
+                        synced -> {
+                            listViewAdapter.addAll(overviewViewmodel.getItems());
+                            listViewAdapter.notifyDataSetChanged();
+                            showMessage("Sync completed, added " + overviewViewmodel.getItems().size() + " items.");
+                        }
+                );
+            } else {
+                Toast.makeText(this,"RunSync is not available", Toast.LENGTH_SHORT).show();
+            }
+            return true;
         } else {
             return super.onOptionsItemSelected(item);
         }
